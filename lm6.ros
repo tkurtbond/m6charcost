@@ -1,0 +1,114 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+;;; m6.ros - calculate points costs of Mini-Six Characters in YAML.
+
+(progn ;;init forms
+  (ros:ensure-asdf)
+  ;;#+quicklisp(ql:quickload '() :silent t)
+  )
+
+(ql:quickload "cl-yaml" :silent t)
+(ql:quickload "alexandria" :silent t)
+(ql:quickload "cl-ppcre" :silent t)
+
+(defpackage :ros.script.m6.3780600765
+  (:use :cl))
+(in-package :ros.script.m6.3780600765)
+
+(defmacro when-in-hash ((var k hashtable) &body body)
+  (let ((present-p (gensym)))
+    `(multiple-value-bind (,var ,present-p) (gethash ,k ,hashtable)
+       (declare (ignorable ,var))
+       (when ,present-p
+	 ,@body))))
+
+(defparameter *line-of-equals* (make-string 43 :initial-element #\=))
+
+(defparameter *scanner* (ppcre:create-scanner "^([0-9]+)[Dd](\\+([1-2]))?$"))
+(defparameter *pips-per-die* 3)
+
+(defun dice-to-cost (dice)
+  (ppcre:register-groups-bind 
+      ((#'parse-integer num-dice) plus-pips (#'parse-integer num-pips))
+      (*scanner* dice)
+    (declare (ignorable plus-pips))
+    (+ (* num-dice *pips-per-die*)
+       (if num-pips num-pips 0))))
+
+(defun cost-to-dice (cost)
+  (multiple-value-bind (dice pips) (truncate cost *pips-per-die*)
+    (format nil "~DD+~D" dice pips)))
+
+(defun calculate-character (character)
+  (let ((statistics '("Might" "Agility" "Wit" "Charm"))
+	(total-stat-cost 0)
+	(total-skill-cost 0)
+	(total-perk-cost 0)
+	(total-skill-and-perk-cost 0))
+    (when-in-hash (name "Name" character)
+      (format t "Name: ~A~%" name))
+    (when-in-hash (desc "Description" character)
+      (format t "    ~A~%" desc))
+    (when-in-hash (player "Player" character)
+      (format t "Player: ~A~%" player))
+    (when-in-hash (stats "Statistics" character)
+      (setf statistics stats))
+    ;; TODO: Check what form skills are listed, relative or absolute.
+    ;; TODO: Check where skills listed, with stats or under 'skills'
+    ;; 
+    ;; This works for absolute skills listed with stats.
+    (dolist (statname statistics)
+      (destructuring-bind (dice . skills) (gethash statname character)
+	(let ((stat-cost (dice-to-cost dice)))
+	  (incf total-stat-cost stat-cost)
+	  (format t "~30@<~a: ~a~> (~3d points)~%" statname dice stat-cost)
+	  (loop for (skill-name skill-dice) in skills
+	     do (let* ((skill-cost (dice-to-cost skill-dice))
+		       (relative-cost (- skill-cost stat-cost))
+		       (relative-dice (cost-to-dice relative-cost)))
+		  (incf total-skill-cost relative-cost)
+		  (incf total-skill-and-perk-cost relative-cost)
+		  (format t "~30@<    ~19@<~a: ~a~> ~6<+~a~>~> (~3d points)~%"
+			  skill-name skill-dice relative-dice
+			  relative-cost))))))
+    (when-in-hash (perks "Perks" character)
+      (format t "Perks:~%")
+      (loop for (perk-name perk-dice) in perks
+	 do (let ((perk-cost (dice-to-cost perk-dice)))
+	      (incf total-perk-cost perk-cost)
+	      (incf total-skill-and-perk-cost perk-cost)
+	      (format t "~30@<   ~A: ~A~> (~3D points)~%"
+		      perk-name perk-dice perk-cost))))
+    (let ((total-stat-dice (cost-to-dice total-stat-cost))
+	  (total-skill-dice (cost-to-dice total-skill-cost))
+	  (total-perk-dice (cost-to-dice total-perk-cost))
+	  (total-skill-and-perk-dice (cost-to-dice total-skill-and-perk-cost)))
+      (format t "~23@<total stat:~> ~6@A (~3D points)~%"
+	      total-stat-dice total-stat-cost)
+      (format t "~23@<total skill:~> ~6@A (~3D points)~%"
+	      total-skill-dice total-skill-cost)
+      (format t "~23@<total perk:~> ~6@A (~3D points)~%"
+	      total-perk-dice total-perk-cost)
+      (format t "~23@<total (skill + perk):~> ~6@A (~3D points)~%"
+	      total-skill-and-perk-dice total-skill-and-perk-cost)
+      (let* ((total-cost (+ total-stat-cost total-skill-cost
+			    total-perk-cost))
+	     (total-dice (cost-to-dice total-cost)))
+	(format t "~23@<total:~> ~6@A (~3d points)~%" 
+		total-dice total-cost)))))
+
+;; Remember: ~/current/RPG/the-kids/Mini-Six/Star-Wars/kids-pcs/kids-pcs-2.yaml
+;; TODO: Figure out how to print out formatted characters.
+
+(defun main (filename &rest argv)
+  (declare (ignorable argv))
+  (let* ((characters-string (alexandria:read-file-into-string filename))
+	 (characters (yaml:parse characters-string)))
+    (loop for character in characters
+       for i from 1
+       when (> i 1) do (format t "~A~%" *line-of-equals*)
+       do (calculate-character character))))
+;;; vim: set ft=lisp lisp:
