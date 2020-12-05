@@ -39,9 +39,11 @@
   (define *line-of-equals* (make-string 43 #\=))
   (define *scanner* (irregex "^([0-9]+)[Dd](\\+([1-2]))?$"))
   (define *pips-per-die* 3)
+  (define *default-stat-dice* "12D")
+  (define *default-stat-cost* (dice-to-cost *default-stat-dice*))
   (define *default-skill-dice* "7D") ;set from command line or json???
   (define *default-skill-cost* (dice-to-cost *default-skill-dice*))
-  (define *print-skill-increase-divided* #t) ;set from command line???
+  (define *print-increase* #t) ;set from command line???
 
   (define (dice-to-cost dice)
     (let ((m (irregex-match *scanner* dice)))
@@ -114,6 +116,8 @@
 			     (format #f "~A: ~A" perk-name perk-dice)
 			     perk-cost)))))
       (let* ((total-stat-dice (cost-to-dice total-stat-cost))
+             (total-stat-increase-cost (- total-stat-cost *default-stat-cost*))
+             (total-stat-increase-dice (cost-to-dice total-stat-increase-cost))
 	     (total-skill-dice (cost-to-dice total-skill-cost))
 	     (total-perk-dice (cost-to-dice total-perk-cost))
 	     (total-skill-and-perk-dice (cost-to-dice total-skill-and-perk-cost))
@@ -121,14 +125,16 @@
              (total-skill-increase-dice (cost-to-dice total-skill-increase-cost)))
 	(format #t "~23A ~6@A (~3D points)~%"
 		"total stat:" total-stat-dice total-stat-cost)
+        (when *print-increase*
+          (format #t "~23A ~6@A (~3D points)~%"
+                  "total stat increase:" total-stat-increase-dice
+                  total-stat-increase-cost))
 	(format #t "~23A ~6@A (~3D points)~%"
 		"total skill:" total-skill-dice total-skill-cost)
-        (format #t "~23A ~6@A (~3D points)~A~%"
-                "total skill increase:" total-skill-increase-dice
-                total-skill-increase-cost 
-                (if (not *print-skill-increase-divided*)
-                    ""
-                    (format #f " ~F" (/ (exact->inexact total-skill-increase-cost) *pips-per-die*))))
+        (when *print-increase*
+          (format #t "~23A ~6@A (~3D points)~%"
+                  "total skill increase:" total-skill-increase-dice
+                  total-skill-increase-cost))
         ;; Actually figuring out the cost in character points, not character
         ;; creation balancing points, would be difficult, as you'd have to know
         ;; the original skill values and then run the process forward from
