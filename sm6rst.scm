@@ -31,7 +31,13 @@
 	 (let ((var (hash-table-ref hash-table key)))
 	   b1 ...)))))
 
+  (define (output-character character)
+    (format #t "Character:~%")
+    (hash-table-walk character (lambda (k v) (format #t "~S: ~S~%" k v))))
+
   (define (print-character character)
+    (when debug
+      (output-character character))
     (let ((statistics '("Might" "Agility" "Wit" "Charm"))
           (header ""))
       (when-in-hash (name "Name" character)
@@ -48,6 +54,8 @@
       (format #t "~A~%~%" (make-string (string-length header) #\=))
       (when-in-hash (description "Description" character)
         (format #t "~A~%~%" description))
+      (when-in-hash (scale "Scale" character)
+        (format #t "| **Scale:** ~A~%" scale))
       (when-in-hash (stats "Statistics" character)
 	(set! statistics (vector->list stats)))
       ;; This works for absolute skills listed with stats.
@@ -67,6 +75,13 @@
         (format #t "~%"))
       (when-in-hash (static "Static" character)
         (format #t "| **Static:** ~A~%" static))
+      (when-in-hash (natural-weapons "Natural Weapons" character)
+        (format #t "| **Natural Weapons:** ")
+        (loop for weapon across natural-weapons
+              for i from 1
+              when (> i 1) do (format #t ", ")
+              do (format #t "~A" weapon))
+        (format #t "~%"))
       (when-in-hash (move "Move" character)
         (format #t "| **Move:** ~A~%" move))
       (when-in-hash (perks "Perks" character)
@@ -76,6 +91,13 @@
               when (> i 1) do (format #t ", ")
 	      do (match-let ((#(perk-name perk-dice) perk))
                    (format #t "~A ~A" perk-name perk-dice)))
+        (format #t "~%"))
+      (when-in-hash (special-abilities "Special Abilities" character)
+        (format #t "| **Special Abilities:** ")
+        (loop for ability across special-abilities
+              for i from 1
+              when (> i 1) do (format #t ", ")
+              do (format #t "~A" ability))
         (format #t "~%"))
       (when-in-hash (complications "Complications" character)
         (format #t "| **Complications:** ")
@@ -135,10 +157,13 @@
   (define output-player #t)
   (define output-title #f)
   (define output-breachworld #f)
+  (define debug #f)
 
   (define opts
     (list (args:make-option (b breachworld) #:none "Output different wound statuses for Breachworld"
-                            (set! output-generated (not output-generated)))
+                            (set! output-breachworld (not output-breachworld)))
+          (args:make-option (d debug) #:none "Output character for debugging"
+                            (set! debug (not debug)))
           (args:make-option (g generated) #:none "Output a generated date only if title specified."
 			    (set! output-generated (not output-generated)))
           (args:make-option (p player) #:none "Toggle player name output (default ON)"
