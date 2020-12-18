@@ -75,12 +75,26 @@
         (format #t "~%"))
       (when-in-hash (static "Static" character)
         (format #t "| **Static:** ~A~%" static))
+      (when-in-hash (natural-armor "Natural Armor" character)
+        (format #t "| **Natural Armor:** ")
+        (loop for armor across natural-armor
+              for i from 1
+              when (> i 1) do (format #t ", ")
+              do (format #t "~A" armor))
+        (format #t "~%"))
       (when-in-hash (natural-weapons "Natural Weapons" character)
         (format #t "| **Natural Weapons:** ")
         (loop for weapon across natural-weapons
               for i from 1
               when (> i 1) do (format #t ", ")
               do (format #t "~A" weapon))
+        (format #t "~%"))
+      (when-in-hash (special-defenses "Special Defenses" character)
+        (format #t "| **Special Defenses:** ")
+        (loop for defense across special-defenses
+              for i from 1
+              when (> i 1) do (format #t ", ")
+              do (format #t "~A" defense))
         (format #t "~%"))
       (when-in-hash (move "Move" character)
         (format #t "| **Move:** ~A~%" move))
@@ -122,6 +136,8 @@
         (format #t "~%"))
       (when-in-hash (hero-points "Hero_Points" character)
         (format #t "| **Hero Points:** ~A~%" hero-points))
+      (when-in-hash (fate-points "Fate_Points" character)
+        (format #t "| **Fate Points:** ~A~%" fate-points))
       (cond (output-breachworld
              (format #t "| **WL:** D:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–16 □~%")
              (format #t "| **SL:** S:1–8 □ SS:9+ □~%"))
