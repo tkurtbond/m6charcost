@@ -266,8 +266,7 @@
             (when (> (length notes) 0)
               (format #t "~%")
               (loop for line in notes
-                    do (output-notes-line line))
-              (format #t "~%")))
+                    do (output-notes-line line))))
            ((string? notes)
             (format #t "~%")
             (format #t "~A~%" notes))
