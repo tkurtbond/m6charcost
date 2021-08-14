@@ -160,14 +160,14 @@
   (define (process-filename filename)
     (let ((ext (pathname-extension filename)))
       (let ((characters
-             (cond ((string=? ext "json")
+             (cond ((and ext (string=? ext "json"))
                     (with-input-from-file filename read-json))
-                   ((string=? ext "yaml")
+                   ((and ext (string=? ext "yaml"))
                     (call-with-input-file filename
                       (lambda (port) (yaml-load port))))
                    (else
-                    (die 3 "unrecognized format: \"~S\" in input filename \"~S\"~%"
-                         ext filename)))))
+                    (die 3 "unrecognized extension: \"~A\" in input filename \"~A\"~%"
+                         (if ext ext "") filename)))))
         (loop for character in characters
 	      for i from 1
 	      when (> i 1) do (format #t "~A~%" *line-of-equals*)

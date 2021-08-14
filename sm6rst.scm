@@ -284,12 +284,12 @@
                     (call-with-input-file filename
                       (lambda (port) (yaml-load port))))
                    (else
-                    (die 3 "unrecognized format: \"~S\" in input filename \"~S\"~%"
-                         ext filename)))))
-      (loop for character in characters
-	    for i from 1
-	    when (> i 1) do (format #t "~%")
-	    do (print-character character)))))
+                    (die 3 "unrecognized extension: \"~A\" in input filename \"~A\"~%"
+                         (if ext ext "") filename)))))
+        (loop for character in characters
+	      for i from 1
+	      when (> i 1) do (format #t "~%")
+	      do (print-character character)))))
 
   ;; We want 
   (json-parsers
