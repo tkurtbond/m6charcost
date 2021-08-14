@@ -3,6 +3,7 @@
 ;;;
 ;;; Remember: ~/current/RPG/the-kids/Mini-Six/Star-Wars/kids-pcs/kids-pcs-2.json
 (module sm6fmt ()
+  (import args)
   (import fmt)
   (import loop)
   (import scheme)
@@ -150,12 +151,25 @@
      (array . ,(lambda (a) a))
      ,@(json-parsers)))
 
-  (match (command-line-arguments)
-    (()
-     (die 1 "No file specified"))
-    ((filename) (process-filename filename))
-    ((filename . others) 
-     (die 1 "unexpected command line arguments: " (wrt others))))
+  (define use-yaml #f)
+  (define use-json #f)
+
+  (define opts
+    (list (args:make-option
+           (j json) #:none "Assume input file is json."
+           (set! use-json #t))
+          (args:make-option
+           (y yaml) #:none "Assume input file is yaml."
+           (set! use-yaml #t))))
+
+  (receive (options operands)
+      (args:parse (command-line-arguments) opts)
+
+    (when (= (length operands) 0)
+      (die 1 "No filenames specified!"))
+
+    (loop for filename in operands
+          do (process-filename filename)))
 
   )
 ;; end of m6.scm

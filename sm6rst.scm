@@ -270,6 +270,7 @@
                     do (output-notes-line line))
               (format #t "~%")))
            ((string? notes)
+            (format #t "~%")
             (format #t "~A~%" notes))
            (else
             (die 5 "unrecognized Notes: not a list or string: ~S~%"
@@ -278,9 +279,9 @@
   (define (process-filename filename)
     (let ((ext (pathname-extension filename)))
       (let ((characters
-             (cond ((and ext (string=? ext "json"))
+             (cond ((or use-json (and ext (string=? ext "json")))
                     (with-input-from-file filename read-json))
-                   ((and ext (string=? ext "yaml"))
+                   ((or use-yaml (and ext (string=? ext "yaml")))
                     (call-with-input-file filename
                       (lambda (port) (yaml-load port))))
                    (else
@@ -316,6 +317,8 @@
   (define output-player-name #t)
   (define output-title #f)
   (define sort-skills #t)
+  (define use-yaml #f)
+  (define use-json #f)
 
   ;;(define chunk #f)
   (define debug #f)
@@ -338,6 +341,9 @@
 	  (args:make-option
            (h help) #:none "Display this text"
            (usage))
+          (args:make-option
+           (j json) #:none "Assume input file is json."
+           (set! use-json #t))
           (args:make-option
            (n npc-format) #:none "Toggle NPC output format (default OFF)"
 	   (set! output-npc-format (not output-npc-format)))
@@ -377,7 +383,10 @@
            (set! output-title arg))
           (args:make-option
            (u underline) #:required "Set character to use for underlining the header."
-           (set! underline (string-ref arg 0)))))
+           (set! underline (string-ref arg 0)))
+          (args:make-option
+           (y yaml) #:none "Assume input file is yaml."
+           (set! use-yaml #t))))
 
   (receive (options operands)
       (args:parse (command-line-arguments) opts)

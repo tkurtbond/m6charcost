@@ -2,6 +2,7 @@
 ;;;
 ;;; Remember: ~/current/RPG/the-kids/Mini-Six/Star-Wars/kids-pcs/kids-pcs-2.json
 (module sm6 ()
+  (import args)
   (import format)
   (import loop)
   (import scheme)
@@ -160,9 +161,9 @@
   (define (process-filename filename)
     (let ((ext (pathname-extension filename)))
       (let ((characters
-             (cond ((and ext (string=? ext "json"))
+             (cond ((or use-json (and ext (string=? ext "json")))
                     (with-input-from-file filename read-json))
-                   ((and ext (string=? ext "yaml"))
+                   ((or use-yaml (and ext (string=? ext "yaml")))
                     (call-with-input-file filename
                       (lambda (port) (yaml-load port))))
                    (else
@@ -172,7 +173,7 @@
 	      for i from 1
 	      when (> i 1) do (format #t "~A~%" *line-of-equals*)
 	      do (calculate-character character)))))
-
+  
   ;; We want 
   (json-parsers
    `(;; Don't change key to symbol
@@ -181,18 +182,24 @@
      (array . ,(lambda (a) a))
      ,@(json-parsers)))
 
-  #|(match (command-line-arguments)
-    (()
-     (die 1 "No file specified"))
-    ((filename) (process-filename filename))
-    ((filename . others) 
-     (die 1 "unexpected command line arguments: ~A" others)))|#
+  (define use-yaml #f)
+  (define use-json #f)
 
-  (when (= (length (command-line-arguments)) 0)
-    (die 1 "No filenames specified!"))
-  (loop for filename in (command-line-arguments)
-        for i from 1
-        when (> i 1) do (format #t "~%~A~%~%" (make-string 43 #\@))
-        do (process-filename filename))
+  (define opts
+    (list (args:make-option
+           (j json) #:none "Assume input file is json."
+           (set! use-json #t))
+          (args:make-option
+           (y yaml) #:none "Assume input file is yaml."
+           (set! use-yaml #t))))
+
+  (receive (options operands)
+      (args:parse (command-line-arguments) opts)
+
+    (when (= (length operands) 0)
+      (die 1 "No filenames specified!"))
+
+    (loop for filename in operands
+          do (process-filename filename)))
   )
 ;; end of sm6.scm
