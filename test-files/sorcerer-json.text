@@ -1,0 +1,43 @@
+[
+    {
+        "Name": "Sorcerer",
+        "Might": ["3D", ["Staff", "5D"], ["Sword", "6D"], ["Lift", "5D"]],
+        "Agility": ["3D", ["Dodge", "5D"], ["Throwing", "6D"],
+                    ["Stealth", "6D"]],
+        "Wit": ["4D", ["Magic", "10D"], ["History", "6D"], ["Language", "6D"],
+                ["Medicine", "5D"]],
+        "Charm": ["4D", ["Command", "6D"], ["Diplomacy", "5D"], ["Ride", "5D"]],
+        "Spells": [
+            "Animate Dead",
+            "Charm",
+            "Conjure Elemental",
+            "Control Weather",
+            "Curse",
+            "Death Spell",
+            "Dispel Magic",
+            "Earthquake",
+            "Fly",
+            "Hasten",
+            "Heal",
+            "Invisibility",
+            "Light",
+            "Lightning Bolt",
+            "Paralysis",
+            "Petrify",
+            "Possession",
+            "See Magic Aura",
+            "Shape Change",
+            "Slumber",
+            "Still Mind",
+            "Telekinesis",
+            "Teleport"
+        ],
+        "Static": [["Block", 9], ["Dodge", 15], ["Parry", 18], ["Soak", 9]],
+        "Gear": [
+            "Staff (+1D+2)",
+            "Sword (+2D+2)",
+            "Chainmail (+6)"
+        ],
+        "Notes": "Anyone can use magic, so no need for the Sorcerer perk.\n"
+    }
+]
