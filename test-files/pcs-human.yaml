@@ -1,0 +1,69 @@
+### Fantasy PCs: 12D in attributes, 10D in skills
+### Skills:
+### - Might: Brawling*, Knife*, Lift, Mace*, Stamina, Axe*, Pole Arm*,
+###   Smithing, Sword*
+### - Agility: Athletics, Dodge*, Pickpocket, Stealth, Throwing*, Bow*,
+###   Crossbow*
+### - Wit: History, Language, Medicine, Pick Locks, Search, Tracking, Magic
+### - Charm: Command, Courage, Diplomacy, Persuasion, Seduce, Streetwise, Ride
+###
+### * = Combat skills, which are not allowed specializations.
+### Static:
+### - Dodge = (3 * Dodge skill dice) + pips
+### - Block = (3 * Brawling skill dice) + pips
+### - Parry = (3 * Weapon skill dice) + pips
+### - Soak  = (3 * Might attribute dice) + pips
+###############################################################################
+- Name: 'Brannok Berryman'
+  Description: 'Ranger'
+  Might: [3D, [Sword, 5D]]
+  Agility: [4D, [Bow, 6D], [Stealth, 6D]]
+  Wit: [3D, [Search, 5D], [Tracking, 5D]]
+  Charm: [2D, ]
+  Gear: ["Bow +2D+2 (30/100/300)", "Leather (+2)", "Sword +2D+2"]
+  Static: [[Dodge, 12], [Block, 9], [Parry, 15], [Soak, 9(11)]]
+- Name: 'Treave Carwithin'
+  Description: 'Fighter'
+  Might: [4D, [Axe, 6D], [Brawling, 6D]]
+  Agility: [3D, [Crossbow, 5D], [Dodge, 5D]]
+  Wit: [2D,]
+  Charm: [3D, [Command, 5D]]
+  Gear: ["Axe, +3D", "Chainmail (+6)", "Crossbow, 4D+1"]
+  Static: [[Dodge, 15], [Block, 18], [Parry, 21], [Soak, 15(21)]]
+- Name: 'Ryd Colenso'
+  Description: 'Rogue'
+  Might: [3D, [Sword, 3D]]
+  Agility: [4D, [Athletics, 5D], [Bow, 5D], [Dodge, 6D], [Pickpockets, 5D], 
+            [Stealth, 6D]]
+  Wit: [3D, ["Pick Locks", 5D], [Search, 4D]]
+  Charm: [2D, ]
+  Gear: ["Bow +2D+2 (30/100/300)", "Leather (+2)", "Lock Picks", "Sword +2D+2"]
+  Static: [[Dodge, 18], [Block, 9], [Parry, 9], [Soak, 9(11)]]
+- Name: 'Treeve Angove'
+  Description: 'Sorcerer'
+  Might: [3D, [Sword, 3D]]
+  Agility: [2D, [Dodge, 3D], [Throwing, 4D]]
+  Wit: [4D, [History, 5D], [Language, 5D], [Magic, 6D]]
+  Charm: [3D, ]
+  Perks: [[Sorcerer, 3]]
+  Spells: [Charm, Invisibility, "Lightning Bolt", Teleport]
+  Gear: ["Leather (+2)", "Sword +2D+2"]
+  Static: [[Dodge, 9], [Block, 6], [Parry, 9], [Soak, 6(8)]]
+- Name: 'Ruan Blewett'
+  Description: 'Face'
+  Might: [2D, [Sword, 4D]]
+  Agility: [2D, [Dodge, 3D]]
+  Wit: [4D, [Language, 5D]]
+  Charm: [4D, [Diplomancy, 6D], [Persuasion, 6D], [Streetwise, 6D]]
+  Gear: ["Leather (+2)", "Sword +2D+2", "Shield (+4)"]
+  Static: [[Dodge, 9], [Block, 6], [Parry, 12], [Soak, 6(12)]]
+- Name: 'Anaoc Rosewarne'
+  Description: 'Combat Medic'
+  Might: [3D, [Sword, 3D]]
+  Agility: [3D, [Bow, 4D], [Dodge, 5D]]
+  Wit: [4D, [Magic, 6D], [Medicine, 6D]]
+  Charm: [2D, ]
+  Perks: [[Sorcerer, 3]]
+  Spells: [ESP, Heal, Light, Slumber]
+  Gear: ["Bow +2D+2 (30/100/300)", "Leather (+2)", "Sword +2D+2"]
+  Static: [[Dodge, 15], [Block, 9], [Parry, 9], [Soak, 9(11)]]
