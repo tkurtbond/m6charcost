@@ -55,8 +55,10 @@ func calculateCharacter(character map[string]interface{}) {
 	var totalSkillAndPerkCost = 0
 	name := character["Name"].(string)
 	fmt.Printf("Name: %s\n", name)
-	desc := character["Description"].(string)
-	fmt.Printf("    %s\n", desc)
+	desc, found := character["Description"].(string)
+	if found {
+		fmt.Printf("    %s\n", desc)
+	}
 	player := character["Player"].(string)
 	fmt.Printf("Player: %s\n", player)
 	statisticsJson, found := character["Statistics"].([]interface{})
