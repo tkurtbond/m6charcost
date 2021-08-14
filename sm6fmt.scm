@@ -8,16 +8,19 @@
   (import scheme)
   (import matchable)
   (import medea)
+  (import yaml)
   (import simple-loops)
   (import (srfi 13))
   (import (srfi 69))
   (import (chicken base))
   (import (chicken irregex))
+  (import (chicken pathname))
   (import (chicken port))
   (import (chicken process-context))
 
-  (define (die status msg)
-    (fmt (current-error-port) (program-name) ": fatal error: " msg nl)
+  (define (die status . args)
+    (apply fmt `(,(current-error-port) ,(program-name) ": fatal error: "
+                 ,@args ,nl))
     (exit status))
 
   (define-syntax inc!
@@ -27,13 +30,14 @@
       ((inc! var value)
        (set! var (+ var value)))))
 
-  ;; (put 'when-in-hash 'scheme-indent-function 1)
-  (define-syntax when-in-hash
+  ;; (put 'when-in-alist 'scheme-indent-function 1)
+  (define-syntax when-in-alist
     (syntax-rules ()
-      ((_ (var key hash-table) b1 ...)
-       (when (hash-table-exists? hash-table key)
-         (let ((var (hash-table-ref hash-table key)))
-           b1 ...)))))
+      ((_ (var key alist) b1 ...)
+       (let ((val (assoc key alist)))
+         (when val
+	   (let ((var (cdr val)))
+	     b1 ...))))))
 
   (define *line-of-equals* (make-string 43 #\=))
   (define *scanner* (irregex "^([0-9]+)[Dd](\\+([1-2]))?$"))
@@ -61,30 +65,30 @@
           (total-skill-cost 0)
           (total-perk-cost 0)
           (total-skill-and-perk-cost 0))
-      (when-in-hash (name "Name" character)
+      (when-in-alist (name "Name" character)
         (fmt #t "Name: " name nl))
-      (when-in-hash (desc "Description" character)
+      (when-in-alist (desc "Description" character)
         (fmt #t "    " desc nl))
-      (when-in-hash (player "Player" character)
+      (when-in-alist (player "Player" character)
         (fmt #t "Player: " player nl))
-      (when-in-hash (stats "Statistics" character)
-        (set! statistics (vector->list stats)))
+      (when-in-alist (stats "Statistics" character)
+        (set! statistics stats))
       ;; TODO: Check what form skills are listed, relative or absolute.
       ;; TODO: Check where skills listed, with stats or under 'skills'
       ;; 
       ;; This works for absolute skills listed with stats.
       (do-list stat-name statistics
-        (unless (hash-table-exists? character stat-name)
+        (unless (unless stat-name character)
           (die 1 (fmt #f "Missing stat name: " stat-name)))
-        (let ((stat-value (hash-table-ref character stat-name)))
-          (match-let ((#(stat-dice skills ...) stat-value))
+        (let ((stat-value (assoc stat-name character)))
+          (match-let (((stat-name stat-dice skills ...) stat-value))
           (let ((stat-cost (dice-to-cost stat-dice)))
             (inc! total-stat-cost stat-cost)
             (fmt #t (pad 30 stat-name ": " stat-dice) " ("
                  (pad/left 3 (num stat-cost)) " points)" nl)
             (loop for skill in skills
                   do (begin
-                       (match-let ((#(skill-name skill-dice) skill))
+                       (match-let (((skill-name skill-dice) skill))
                          (let* ((skill-cost (dice-to-cost skill-dice))
                                 (relative-cost (- skill-cost stat-cost))
                                 (relative-dice (cost-to-dice relative-cost)))
@@ -93,10 +97,10 @@
                            (fmt #t  "    " (pad 19 skill-name ": " skill-dice)
                                 " " (pad/left 6 "+" relative-dice) " ("
                                 (pad/left 3 (num relative-cost)) " points)" nl)))))))))
-      (when-in-hash (perks "Perks" character)
+      (when-in-alist (perks "Perks" character)
         (fmt #t "Perks:" nl)
-        (loop for perk across perks
-              do (match-let ((#(perk-name perk-dice) perk))
+        (loop for perk in perks
+              do (match-let (((perk-name perk-dice) perk))
                    (let ((perk-cost (dice-to-cost perk-dice)))
                      (inc! total-perk-cost perk-cost)
                      (inc! total-skill-and-perk-cost perk-cost)
@@ -121,18 +125,29 @@
                " (" (pad/left 3 total-cost) " points)" nl)))))
 
   (define (process-filename filename)
-    (let ((characters (with-input-from-file filename read-json)))
-      (loop for character across characters
-            for i from 1
-            when (> i 1) do (fmt #t *line-of-equals* nl)
-            do (calculate-character character))))
+    (fmt (current-error-port) "filename: " filename nl)
+    (let ((ext (pathname-extension filename)))
+      (let ((characters
+             (cond ((and ext (string=? ext "json"))
+                    (with-input-from-file filename read-json))
+                   ((and ext (string=? ext "yaml"))
+                    (call-with-input-file filename
+                      (lambda (port)
+                        (yaml-load port))))
+                   (else
+                    (die 3 "unrecognized format: \"" (if ext ext "")
+                         "\" in filename \"" filename "\"" nl)))))
+        (loop for character in characters
+              for i from 1
+              when (> i 1) do (fmt #t *line-of-equals* nl)
+              do (calculate-character character)))))
 
   ;; We want 
   (json-parsers
    `(;; Don't change key to symbol
      (member . ,(lambda (name value) (cons name value)))
-     ;; Convert objects from alist to hash table
-     (object . ,(lambda (object) (alist->hash-table object)))
+     ;; Convert arrays to list
+     (array . ,(lambda (a) a))
      ,@(json-parsers)))
 
   (match (command-line-arguments)
@@ -140,7 +155,7 @@
      (die 1 "No file specified"))
     ((filename) (process-filename filename))
     ((filename . others) 
-     (die 1 (fmt #f "unexpected command line arguments: " (wrt others)))))
+     (die 1 "unexpected command line arguments: " (wrt others))))
 
   )
 ;; end of m6.scm

@@ -1,6 +1,6 @@
 CP=cp
 
-PROGRAMS=sm6 sm6rst sm6troff-ms
+PROGRAMS=sm6 sm6fmt sm6rst sm6troff-ms
 OTHER_PROGRAMS=nm6 gm6 # sm6fmt is obsolete.  ignore om6.native because ocaml on macOS is completely broken.
 
 all: $(foreach P,$(PROGRAMS:%=%$(EXE)) $(OTHER_PROGRAMS:%=%$(EXE)),build/$(P)) 
