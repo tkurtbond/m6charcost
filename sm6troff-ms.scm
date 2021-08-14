@@ -247,7 +247,7 @@
              (format #t "\\fBWL:\\fP D:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")
              (format #t "\\fBSL:\\fP S:1–8 □ SS:9+ □~%"))
             (else
-             (format #t "\\fBWL:\\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–16 □~%")))
+             (format #t "\\fBWL:\\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")))
       ;; Can we implement "Image" usefully?
       ;; This is very output format dependent: .eps for groff -ms and
       ;; pandoc -w ms, .png for pandoc -w html.
