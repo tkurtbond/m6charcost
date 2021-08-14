@@ -1,0 +1,36 @@
+### sm6rst -s '-#' multiline-string-notes.yaml
+
+---
+- Name: Morwen Polglaze
+  Archetype: ruin/cave explorer
+  Description: Very short, **very** muscular.  Murderous. :-)
+  Player: Lily Bond
+  Might: [4D, [Axe, 6D]]
+  Agility: [3D, [Dodge, 5D], [Crossbow, 4D]]
+  Wit: [3D, [Search, 4D], [Survival, 4D]]
+  Charm: [2D]
+  Static: [[Dodge, 15], [Block, 12], ['Parry (Axe)', 18], [Soak, 12(18)]]
+  Perks: [[Perceptive, 2D], [Recall, 1D]]
+  Gear: ['Axe (+3D)', 'Chainmail (+6)', 'Crossbow (4D+1, 50/150/400, 20 bolts)',
+         'Knife (+1D)']
+  Hero_Points: 2
+  Notes: |
+    Perks
+    -----
+
+    **Perceptive (2):** The GM may reveal small clues to you that others
+    would miss. Once per session a character may announce they are
+    studying an object or situation and the GM may reveal something
+    that would be impossible for a normal character to determine. If
+    nothing is revealed this perk may be used again. “Elementary, my
+    dear Watson.”
+
+    **Recall (1):** Any time the character chooses to recall anything he
+    has experienced, the GM must tell him the truth in as much detail
+    as the character would have been aware.
+
+
+### Local Variables:
+### compile-command: "yamllint -c ~/.config/yamllint/config -f parsable multiline-string-notes.yaml"
+### End:
+
