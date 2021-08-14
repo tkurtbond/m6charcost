@@ -125,23 +125,27 @@
           (fmt #t (pad 24 "total:") (pad/left 6 total-dice)
                " (" (pad/left 3 total-cost) " points)" nl)))))
 
+  (define (process-characters characters)
+    (loop for character in characters
+          for i from 1
+          when (> i 1) do (fmt #t *line-of-equals* nl)
+          do (calculate-character character)))
+
   (define (process-filename filename)
-    (fmt (current-error-port) "filename: " filename nl)
-    (let ((ext (pathname-extension filename)))
-      (let ((characters
-             (cond ((and ext (string=? ext "json"))
-                    (with-input-from-file filename read-json))
-                   ((and ext (string=? ext "yaml"))
-                    (call-with-input-file filename
-                      (lambda (port)
-                        (yaml-load port))))
-                   (else
-                    (die 3 "unrecognized format: \"" (if ext ext "")
-                         "\" in filename \"" filename "\"" nl)))))
-        (loop for character in characters
-              for i from 1
-              when (> i 1) do (fmt #t *line-of-equals* nl)
-              do (calculate-character character)))))
+    (let* ((port (if (string=? filename "-")
+                     (current-input-port)
+                     (open-input-file filename)))
+           (ext (pathname-extension filename))
+           (fun (cond ((or use-json (and ext (string=? ext "json")))
+                       read-json)
+                      ((or use-yaml (and ext (string=? ext "yaml")))
+                       yaml-load)
+                      (else
+                       (if (string=? filename "-")
+                           (die 5 "you must specify -y or -j if reading from stdin.")
+                           (die 3 "unrecognized format: \"" (if ext ext "")
+                                "\" in filename \"" filename "\"" nl))))))
+      (process-characters (fun port))))
 
   ;; We want 
   (json-parsers
@@ -164,12 +168,10 @@
 
   (receive (options operands)
       (args:parse (command-line-arguments) opts)
-
-    (when (= (length operands) 0)
-      (die 1 "No filenames specified!"))
-
-    (loop for filename in operands
-          do (process-filename filename)))
-
+    (cond ((= (length operands) 0)
+           (process-filename "-"))
+          (else 
+           (loop for filename in operands
+                 do (process-filename filename)))))
   )
 ;; end of m6.scm

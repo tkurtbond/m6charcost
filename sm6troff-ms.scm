@@ -257,20 +257,27 @@
       ;; And then we'd need an option for .NH/.SH.
       (format #t ".KE~%")))
 
+  (define (process-characters characters)
+    (loop for character in characters
+          for i from 1
+          when (> i 1) do (format #t "~%")
+          do (print-character character)))
+
   (define (process-filename filename)
-    (let ((ext (pathname-extension filename)))
-      (let ((characters
-             (cond ((or use-json (and ext (string=? ext "json")))
-                    (with-input-from-file filename read-json))
-                   ((or use-yaml (and ext (string=? ext "yaml")))
-                    (call-with-input-file filename
-                      (lambda (port) (yaml-load port))))
-                   (else
-                    (die 3 "unrecognized extension: \"~A\" in input filename \"~A\"~%"
-                         (if ext ext "") filename)))))
-        (loop for character in characters
-	      for i from 1
-	      do (print-character character)))))
+    (let* ((port (if (string=? filename "-")
+                     (current-input-port)
+                     (open-input-file filename)))
+           (ext (pathname-extension filename))
+           (fun (cond ((or use-json (and ext (string=? ext "json")))
+                       read-json)
+                      ((or use-yaml (and ext (string=? ext "yaml")))
+                       yaml-load)
+                      (else
+                       (if (string=? filename "-")
+                           (die 5 "you must specify -y or -j if reading from stdin.")
+                           (die 3 "unrecognized format: \"~A\" in filename \"~A\""
+                                (if ext ext "") filename))))))
+      (process-characters (fun port))))
 
   ;; We want 
   (json-parsers
@@ -359,13 +366,6 @@
 
   (receive (options operands)
       (args:parse (command-line-arguments) opts)
-    (when #f
-      (format #t "output-player-name: ~A~%output-title: ~A~%"
-              output-player-name output-title)
-      (format #t "options: ~S~%operands: ~S~%" options operands))
-
-    (when (= (length operands) 0)
-      (die 1 "No filenames specified!"))
 
     ;; Output troff -ms setup.
     (format #t "~A" ".\\\" text width
@@ -441,10 +441,10 @@
         (format #t ".LP~%\\fIGenerated: ~A\\fP~%"
                 (date->string (current-date) "~Y-~m-~d ~T (~A, ~e ~B ~Y)"))))
 
-
-    (loop for filename in operands
-          for i from 1
-          when (> i 1) do (format #t "~%~%~%")
-          do (process-filename filename)))
+    (cond ((= (length operands) 0)
+           (process-filename "-"))
+          (else 
+           (loop for filename in operands
+                 do (process-filename filename)))))
   )
 ;; end of sm6troff.scm

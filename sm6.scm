@@ -158,21 +158,27 @@
 	  (format #t "~23A ~6@A (~3D points)~%" 
 		  "total:" total-dice total-cost)))))
 
+  (define (process-characters characters)
+    (loop for character in characters
+          for i from 1
+          when (> i 1) do (format #t "~A~%" *line-of-equals*)
+          do (calculate-character character)))
+
   (define (process-filename filename)
-    (let ((ext (pathname-extension filename)))
-      (let ((characters
-             (cond ((or use-json (and ext (string=? ext "json")))
-                    (with-input-from-file filename read-json))
-                   ((or use-yaml (and ext (string=? ext "yaml")))
-                    (call-with-input-file filename
-                      (lambda (port) (yaml-load port))))
-                   (else
-                    (die 3 "unrecognized extension: \"~A\" in input filename \"~A\"~%"
-                         (if ext ext "") filename)))))
-        (loop for character in characters
-	      for i from 1
-	      when (> i 1) do (format #t "~A~%" *line-of-equals*)
-	      do (calculate-character character)))))
+    (let* ((port (if (string=? filename "-")
+                     (current-input-port)
+                     (open-input-file filename)))
+           (ext (pathname-extension filename))
+           (fun (cond ((or use-json (and ext (string=? ext "json")))
+                       read-json)
+                      ((or use-yaml (and ext (string=? ext "yaml")))
+                       yaml-load)
+                      (else
+                       (if (string=? filename "-")
+                           (die 5 "you must specify -y or -j if reading from stdin.")
+                           (die 3 "unrecognized format: \"~A\" in filename \"~A\""
+                                (if ext ext "") filename))))))
+      (process-characters (fun port))))
   
   ;; We want 
   (json-parsers
@@ -195,11 +201,10 @@
 
   (receive (options operands)
       (args:parse (command-line-arguments) opts)
-
-    (when (= (length operands) 0)
-      (die 1 "No filenames specified!"))
-
-    (loop for filename in operands
-          do (process-filename filename)))
+    (cond ((= (length operands) 0)
+           (process-filename "-"))
+          (else 
+           (loop for filename in operands
+                 do (process-filename filename)))))
   )
 ;; end of sm6.scm
