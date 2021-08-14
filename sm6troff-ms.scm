@@ -266,7 +266,8 @@
                     (call-with-input-file filename
                       (lambda (port) (yaml-load port))))
                    (else
-                    (die 3 "unrecognized format: ~S in ~S~%" ext filename)))))
+                    (die 3 "unrecognized format: \"~S\" in input filename \"~S\"~%"
+                         ext filename)))))
         (loop for character in characters
 	      for i from 1
 	      do (print-character character)))))
