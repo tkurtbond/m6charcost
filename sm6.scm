@@ -42,10 +42,6 @@
   (define *line-of-equals* (make-string 43 #\=))
   (define *scanner* (irregex "^([0-9]+)[Dd](\\+([1-2]))?$"))
   (define *pips-per-die* 3)
-  (define *default-stat-dice* "12D")
-  (define *default-stat-cost* (dice-to-cost *default-stat-dice*))
-  (define *default-skill-dice* "7D") ;set from command line or json???
-  (define *default-skill-cost* (dice-to-cost *default-skill-dice*))
   (define *print-increase* #t) ;set from command line???
 
   (define (dice-to-cost dice)
@@ -58,6 +54,11 @@
 	     (num-pips (if num-pips (string->number num-pips) 0)))
 	(+ (* num-dice *pips-per-die*)
 	   (if num-pips num-pips 0)))))
+
+  (define *default-stat-dice* "12D")
+  (define *default-stat-cost* (dice-to-cost *default-stat-dice*))
+  (define *default-skill-dice* "7D") ;set from command line or json???
+  (define *default-skill-cost* (dice-to-cost *default-skill-dice*))
 
   (define (cost-to-dice cost)
     (let* ((dice (truncate (/ cost *pips-per-die*)))
