@@ -10,6 +10,7 @@
   (import medea)
   (import yaml)
   (import simple-loops)
+  (import (srfi 1))
   (import (srfi 13))
   (import (srfi 19))
   (import (srfi 69))
@@ -19,6 +20,7 @@
   (import (chicken port))
   (import (chicken process-context))
   (import (chicken sort))
+  (import (chicken string))
 
   (define (die status . args)
     (format (current-error-port) "~A: fatal error: " (program-name))
@@ -26,6 +28,10 @@
     (format (current-error-port) "\n")
     (exit status))
 
+  (define (dbg . args)
+    (format (current-error-port) "~A: dbg: " (program-name))
+    (apply format (cons (current-error-port) args)))
+  
   ;; (put 'when-in-alist 'scheme-indent-function 1)
   (define-syntax when-in-alist
     (syntax-rules ()
@@ -40,7 +46,7 @@
       (if (null? substitutes)
           #f
           (let* ((substitute (car substitutes))
-                 (rx (car substitute))
+                 (rx `(bol (+ ,(car substitute)) eol))
                  (ch (cdr substitute)))
             (if (irregex-match rx line)
                 (make-string (string-length line) ch)
@@ -90,6 +96,8 @@
 		do (match-let (((skill-name skill-dice) skill))
                      (format #t "~A ~A" skill-name skill-dice)))))
       (format #t "~%")))
+
+  (define blanks-rx (string->irregex "[\t ]*"))
 
   (define (print-character character)
     (let ((statistics '("Might" "Agility" "Wit" "Charm"))
@@ -269,7 +277,12 @@
                     do (output-notes-line line))))
            ((string? notes)
             (format #t "~%")
-            (format #t "~A~%" notes))
+            (let* ((lines (string-split notes "\n" #t))
+                   (lines (if (irregex-match blanks-rx (last lines))
+                              (drop-right lines 1)
+                              lines)))
+              (loop for line in lines
+                    do (output-notes-line line))))
            (else
             (die 5 "unrecognized Notes: not a list or string: ~S~%"
                  notes)))))))
