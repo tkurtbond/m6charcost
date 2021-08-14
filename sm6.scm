@@ -7,11 +7,13 @@
   (import scheme)
   (import matchable)
   (import medea)
+  (import yaml)
   (import simple-loops)
-  (import srfi-13)
-  (import srfi-69)
+  (import (srfi 13))
+  (import (srfi 69))
   (import (chicken base))
   (import (chicken irregex))
+  (import (chicken pathname))
   (import (chicken port))
   (import (chicken process-context))
 
@@ -28,13 +30,14 @@
       ((inc! var value)
        (set! var (+ var value)))))
 
-  ;; (put 'when-in-hash 'scheme-indent-function 1)
-  (define-syntax when-in-hash
+  ;; (put 'when-in-alist 'scheme-indent-function 1)
+  (define-syntax when-in-alist
     (syntax-rules ()
-      ((_ (var key hash-table) b1 ...)
-       (when (hash-table-exists? hash-table key)
-	 (let ((var (hash-table-ref hash-table key)))
-	   b1 ...)))))
+      ((_ (var key alist) b1 ...)
+       (let ((val (assoc key alist)))
+       (when val
+	 (let ((var (cdr val)))
+	   b1 ...))))))
 
   (define *line-of-equals* (make-string 43 #\=))
   (define *scanner* (irregex "^([0-9]+)[Dd](\\+([1-2]))?$"))
@@ -57,9 +60,12 @@
 	   (if num-pips num-pips 0)))))
 
   (define (cost-to-dice cost)
-    (let ((dice (truncate (/ cost *pips-per-die*)))
-	  (pips (modulo cost *pips-per-die*)))
-      (format #f "~DD+~D" dice pips)))
+    (let* ((dice (truncate (/ cost *pips-per-die*)))
+           (pips (remainder cost *pips-per-die*))
+           ;; If dice is zero, then that number won't have a sign, but
+           ;; the dice code should be negative, so add it explicitly.
+           (neg (if (and (< cost 0) (= dice 0)) "-" "")))
+      (format #f "~A~DD+~D" neg dice (abs pips))))
 
   (define (calculate-character character)
     (let ((statistics '("Might" "Agility" "Wit" "Charm"))
@@ -67,33 +73,33 @@
 	  (total-skill-cost 0)
 	  (total-perk-cost 0)
 	  (total-skill-and-perk-cost 0))
-      (when-in-hash (name "Name" character)
+      (when-in-alist (name "Name" character)
 	(format #t "Name: ~A" name))
-      (when-in-hash (archetype "Archetype" character)
+      (when-in-alist (archetype "Archetype" character)
 	(format #t " - ~A" archetype))
       (format #t "~%")
-      (when-in-hash (description "Description" character)
+      (when-in-alist (description "Description" character)
         (format #t "      ~A~%" description))
-      (when-in-hash (player "Player" character)
+      (when-in-alist (player "Player" character)
 	(format #t "Player: ~A~%" player))
-      (when-in-hash (stats "Statistics" character)
-	(set! statistics (vector->list stats)))
+      (when-in-alist (stats "Statistics" character)
+	(set! statistics stats))
       ;; TODO: Check what form skills are listed, relative or absolute.
       ;; TODO: Check where skills listed, with stats or under 'skills'
       ;; 
       ;; This works for absolute skills listed with stats.
       (do-list stat-name statistics
-	(unless (hash-table-exists? character stat-name)
+	(unless (assoc stat-name character)
 	  (die 1 "Missing stat name: ~A" stat-name))
-	(let ((stat-value (hash-table-ref character stat-name)))
-	  (match-let ((#(stat-dice skills ...) stat-value))
+	(let ((stat-value (assoc stat-name character)))
+	  (match-let (((stat-name stat-dice skills ...) stat-value))
 	  (let ((stat-cost (dice-to-cost stat-dice)))
 	    (inc! total-stat-cost stat-cost)
 	    (format #t "~30a (~3d points)~%" 
 	   	    (format #f "~a: ~a" stat-name stat-dice) stat-cost)
 	    (loop for skill in skills
 		  do (begin
-		       (match-let ((#(skill-name skill-dice) skill))
+		       (match-let (((skill-name skill-dice) skill))
 			 (let* ((skill-cost (dice-to-cost skill-dice))
 				(relative-cost (- skill-cost stat-cost))
 				(relative-dice (string-append
@@ -105,10 +111,10 @@
 				   (format #f "~a: ~a" skill-name skill-dice)
 				   relative-dice
 				   relative-cost)))))))))
-      (when-in-hash (perks "Perks" character)
+      (when-in-alist (perks "Perks" character)
 	(format #t "Perks:~%")
-	(loop for perk across perks
-	      do (match-let ((#(perk-name perk-dice) perk))
+	(loop for perk in perks
+	      do (match-let (((perk-name perk-dice) perk))
 		   (let ((perk-cost (dice-to-cost perk-dice)))
 		     (inc! total-perk-cost perk-cost)
 		     (inc! total-skill-and-perk-cost perk-cost)
@@ -151,18 +157,26 @@
 		  "total:" total-dice total-cost)))))
 
   (define (process-filename filename)
-    (let ((characters (with-input-from-file filename read-json)))
-      (loop for character across characters
-	    for i from 1
-	    when (> i 1) do (format #t "~A~%" *line-of-equals*)
-	    do (calculate-character character))))
+    (let ((ext (pathname-extension filename)))
+      (let ((characters
+             (cond ((string=? ext "json")
+                    (with-input-from-file filename read-json))
+                   ((string=? ext "yaml")
+                    (call-with-input-file filename
+                      (lambda (port) (yaml-load port))))
+                   (else
+                    (die 3 "unrecognized format: ~S~%" ext)))))
+        (loop for character in characters
+	      for i from 1
+	      when (> i 1) do (format #t "~A~%" *line-of-equals*)
+	      do (calculate-character character)))))
 
   ;; We want 
   (json-parsers
    `(;; Don't change key to symbol
      (member . ,(lambda (name value) (cons name value)))
-     ;; Convert objects from alist to hash table
-     (object . ,(lambda (object) (alist->hash-table object)))
+     ;; Convert objects from array to list
+     (array . ,(lambda (a) a))
      ,@(json-parsers)))
 
   #|(match (command-line-arguments)

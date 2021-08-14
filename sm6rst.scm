@@ -1,21 +1,24 @@
 ;;; sm6rst.scm - Convert Mini-Six Characters in JSON to ReStructuredText.
 ;;;
 ;;; Remember: ~/current/RPG/the-kids/Mini-Six/Star-Wars/kids-pcs/kids-pcs-3.json
-(module sm6print ()
+(module sm6rst ()
   (import args)
   (import format)
   (import loop)
   (import scheme)
   (import matchable)
   (import medea)
+  (import yaml)
   (import simple-loops)
-  (import srfi-13)
-  (import srfi-19)
-  (import srfi-69)
+  (import (srfi 13))
+  (import (srfi 19))
+  (import (srfi 69))
   (import (chicken base))
   (import (chicken irregex))
+  (import (chicken pathname))
   (import (chicken port))
   (import (chicken process-context))
+  (import (chicken sort))
 
   (define (die status . args)
     (format (current-error-port) "~A: fatal error: " (program-name))
@@ -23,140 +26,276 @@
     (format (current-error-port) "\n")
     (exit status))
 
-  ;; (put 'when-in-hash 'scheme-indent-function 1)
-  (define-syntax when-in-hash
+  ;; (put 'when-in-alist 'scheme-indent-function 1)
+  (define-syntax when-in-alist
     (syntax-rules ()
-      ((_ (var key hash-table) b1 ...)
-       (when (hash-table-exists? hash-table key)
-	 (let ((var (hash-table-ref hash-table key)))
-	   b1 ...)))))
+      ((_ (var key alist) b1 ...)
+       (let ((val (assoc key alist)))
+         (when val
+	   (let ((var (cdr val)))
+	     b1 ...))))))
 
-  (define (output-character character)
-    (format #t "Character:~%")
-    (hash-table-walk character (lambda (k v) (format #t "~S: ~S~%" k v))))
+  (define (output-notes-line line)
+    (define (iter substitutes)
+      (if (null? substitutes)
+          #f
+          (let* ((substitute (car substitutes))
+                 (rx (car substitute))
+                 (ch (cdr substitute)))
+            (if (irregex-match rx line)
+                (make-string (string-length line) ch)
+                (iter (cdr substitutes))))))
+    (let ((new-line (if substitutes (iter substitutes) line)))
+      (format #t "~A~%" (cond (substitutes
+                               (if new-line new-line line))
+                              (else line)))))
+
+  (define (print-npc-attributes-and-skills character statistics)
+    (format #t "| **Attibutes:** ")
+    (define skills '())
+    (loop for name in statistics for i from 1
+          do (begin
+               (let ((stat (assoc name character)))
+                 (unless stat
+	           (die 1 "Missing stat name: ~A" name))
+                 (when (> i 1) (format #t ", "))
+                 (match-let (((stat-name stat-dice stat-skills ...)
+                              stat))
+                   ;; Don't need bold, since we have Attributes.
+                   (format #t "~A ~A" stat-name stat-dice)
+                   (set! skills (append skills stat-skills))))))
+    (format #t "~%")
+    (set! skills (sort skills (lambda (x y) (string<? (car x) (car y)))))
+    (format #t "| **Skills:** ")
+    (loop for skill in skills for i from 1
+          do (match-let (((skill-name skill-dice) skill))
+               (when (> i 1) (format #t ", "))
+               (format #t "~A ~A" skill-name skill-dice)))
+    (format #t "~%"))
+
+  (define (print-pc-attributes-and-skills character statistics)
+    (do-list stat-name statistics
+      (unless (assoc stat-name character)
+	(die 1 "Missing stat name: ~A" stat-name))
+      (let ((stat-value (assoc stat-name character)))
+	(match-let (((stat-name stat-dice skills ...) stat-value))
+          (when sort-skills (set! skills (sort skills (lambda (x y)
+                                                        (string<? (car x)
+                                                                  (car y))))))
+          (format #t "| **~a ~a**" stat-name stat-dice)
+          (loop for skill in skills
+                for i from 1
+                when (= i 1) do (format #t " — ")
+                when (> i 1) do (format #t ", ")
+		do (match-let (((skill-name skill-dice) skill))
+                     (format #t "~A ~A" skill-name skill-dice)))))
+      (format #t "~%")))
+
 
   (define (print-character character)
-    (when debug
-      (output-character character))
     (let ((statistics '("Might" "Agility" "Wit" "Charm"))
-          (header ""))
-      (when-in-hash (name "Name" character)
-	(set! header (format #f "~A" name)))
+          (header "")
+          (outer-name #f))
+      (when-in-alist (name "Name" character)
+	(set! header (format #f "~A" name))
+        (set! outer-name name))
       ;; Using an Unicode EM DASH makes the underline longer.  utf8 egg???
-      (when-in-hash (archetype "Archetype" character)
-	(set! header (format #f "~A — ~A" header archetype)))
-      (when-in-hash (number "Number" character)
+      ;; No, use a hypen-minus, because it appears in the PDF outline, and
+      ;; groff doesn't get non-ascii characters right in that.
+      (when-in-alist (archetype "Archetype" character)
+	(set! header (format #f "~A - ~A" header archetype)))
+      (when-in-alist (number "Number" character)
 	(set! header (format #f "~A ×~A" header number)))
-      (when output-player
-        (when-in-hash (player "Player" character)
+      (when output-player-name
+        (when-in-alist (player "Player" character)
           (set! header (format #f "~A (~A)" header player))))
       (format #t "~A~%" header)
-      (format #t "~A~%~%" (make-string (string-length header) #\=))
-      (when-in-hash (description "Description" character)
+      (format #t "~A~%~%" (make-string (string-length header) underline))
+      (when-in-alist (quote "Quote" character)
+        (format #t "*“~A”*~%~%" quote))
+      (when-in-alist (description "Description" character)
         (format #t "~A~%~%" description))
-      (when-in-hash (scale "Scale" character)
+      (when-in-alist (scale "Scale" character)
         (format #t "| **Scale:** ~A~%" scale))
-      (when-in-hash (stats "Statistics" character)
-	(set! statistics (vector->list stats)))
+      (when-in-alist (stats "Statistics" character)
+	(set! statistics stats))
       ;; This works for absolute skills listed with stats.
-      (do-list stat-name statistics
-	(unless (hash-table-exists? character stat-name)
-	  (die 1 "Missing stat name: ~A" stat-name))
-	(let ((stat-value (hash-table-ref character stat-name)))
-	  (match-let ((#(stat-dice skills ...) stat-value))
-            (format #t "| **~a ~a**" stat-name stat-dice)
-            (loop for skill in skills
-                  for i from 1
-                  when (= i 1) do (format #t " — ")
-                  when (> i 1) do (format #t ", ")
-		  do (begin
-		       (match-let ((#(skill-name skill-dice) skill))
-                         (format #t "~A ~A" skill-name skill-dice))))))
-        (format #t "~%"))
-      (when-in-hash (static "Static" character)
-        (format #t "| **Static:** ~A~%" static))
-      (when-in-hash (natural-armor "Natural Armor" character)
-        (format #t "| **Natural Armor:** ")
-        (loop for armor across natural-armor
-              for i from 1
-              when (> i 1) do (format #t ", ")
-              do (format #t "~A" armor))
-        (format #t "~%"))
-      (when-in-hash (natural-weapons "Natural Weapons" character)
-        (format #t "| **Natural Weapons:** ")
-        (loop for weapon across natural-weapons
-              for i from 1
-              when (> i 1) do (format #t ", ")
-              do (format #t "~A" weapon))
-        (format #t "~%"))
-      (when-in-hash (special-defenses "Special Defenses" character)
-        (format #t "| **Special Defenses:** ")
-        (loop for defense across special-defenses
-              for i from 1
-              when (> i 1) do (format #t ", ")
-              do (format #t "~A" defense))
-        (format #t "~%"))
-      (when-in-hash (move "Move" character)
+      (if (and (or output-npc-format (assoc "NPC" character))
+               (not output-player-format))
+          (print-npc-attributes-and-skills character statistics)
+          (print-pc-attributes-and-skills character statistics))
+      (when-in-alist (perks "Perks" character)
+        (when (> (length perks) 0)
+	  (format #t "| **Perks:** ")
+	  (loop for perk in perks
+                for i from 1
+                when (> i 1) do (format #t ", ")
+	        do (match-let (((perk-name perk-dice) perk))
+                     ;; we don't care what it cost since we're not
+                     ;; calculating costs.
+                     (format #t "~A" perk-name)))
+          (format #t "~%")))
+      (when-in-alist (complications "Complications" character)
+        (when (> (length complications) 0)
+          (format #t "| **Complications:** ")
+          (loop for complication in complications
+                for i from 1
+                when (> i 1) do (format #t ", ")
+                do (format #t "~A" complication))
+          (format #t "~%")))
+      ;; Powers and Spells come (almost) right after Perks, because that's
+      ;; where Sorcerer will be.
+      (when-in-alist (powers "Powers" character)
+        (when (> (length powers) 0)
+          (format #t "| **Powers:** ")
+          (loop for power in powers
+                for i from 1
+                when (> i 1) do (format #t ", ")
+                do (format #t "~A" power))
+          (format #t "~%")))
+      (when-in-alist (spells "Spells" character)
+        (when (> (length spells) 0)
+          (format #t "| **Spells:** ")
+          (loop for spell in spells
+                for i from 1
+                when (> i 1) do (format #t ", ")
+                do (format #t "~A" spell))
+          (format #t "~%")))
+      (when-in-alist (gear "Gear" character)
+        (when (> (length gear) 0)
+          (format #t "| **Gear:** ")
+          (loop for g in gear
+                for i from 1
+                when (> i 1) do (format #t ", ")
+                do (format #t "~A" g))
+          (format #t "~%")))
+      (when-in-alist (statics "Static" character)
+        (cond ((list? statics)
+               (format #t "| **Static:** ")
+               (loop for static in statics for i from 1
+                     when (> i 1) do (format #t "; ")
+                     do (match static
+                          ((static-name static-value) 
+                           (format #t "~A ~A" static-name static-value))
+                          ((? string? static)
+                           (format #t "~A" static))))
+               (format #t "~%"))
+              (else (format #t "| **Static:** ~A~%" statics))))
+      (when-in-alist (defenses "Defenses" character)
+        (cond ((list? defenses)
+               (format #t "| **Defenses:** ")
+               (loop for defense in defenses for i from 1
+                     when (> i 1) do (format #t "; ")
+                     do (match defense
+                          ((defense-name defense-value)
+                           (format #t "~A ~A" defense-name defense-value))
+                          ((? string? defense)
+                           (format #t "~A" defense))))
+               (format #t "~%"))
+              (else (format #t "| **Defenses:** ~A~%" defenses))))
+      (when-in-alist (move "Move" character)
         (format #t "| **Move:** ~A~%" move))
-      (when-in-hash (perks "Perks" character)
-	(format #t "| **Perks:** ")
-	(loop for perk across perks
-              for i from 1
-              when (> i 1) do (format #t ", ")
-	      do (match-let ((#(perk-name perk-dice) perk))
-                   (format #t "~A ~A" perk-name perk-dice)))
-        (format #t "~%"))
-      (when-in-hash (special-abilities "Special Abilities" character)
-        (format #t "| **Special Abilities:** ")
-        (loop for ability across special-abilities
-              for i from 1
-              when (> i 1) do (format #t ", ")
-              do (format #t "~A" ability))
-        (format #t "~%"))
-      (when-in-hash (complications "Complications" character)
-        (format #t "| **Complications:** ")
-        (loop for complication across complications
-              for i from 1
-              when (> i 1) do (format #t ", ")
-              do (format #t "~A" complication))
-        (format #t "~%"))
-      (when-in-hash (powers "Powers" character)
-        (format #t "| **Powers:** ")
-        (loop for power across powers
-              for i from 1
-              when (> i 1) do (format #t ", ")
-              do (format #t "~A" power))
-        (format #t "~%"))
-      (when-in-hash (gear "Gear" character)
-        (format #t "| **Gear:** ")
-        (loop for g across gear
-              for i from 1
-              when (> i 1) do (format #t ", ")
-              do (format #t "~A" g))
-        (format #t "~%"))
-      (when-in-hash (hero-points "Hero_Points" character)
+      (when-in-alist (melee "Melee" character)
+        (when (> (length melee) 0)
+          (format #t "| **Melee:** ")
+          (loop for weapon in melee
+                for i from 1
+                when (> i 1) do (format #t "; ")
+                do (format #t "~A" weapon))
+          (format #t "~%")))
+      (when-in-alist (ranged "Ranged" character)
+        (when (> (length ranged) 0)
+          (format #t "| **Ranged:** ")
+          (loop for weapon in ranged
+                for i from 1
+                when (> i 1) do (format #t "; ")
+                do (format #t "~A" weapon))
+          (format #t "~%")))
+      (when-in-alist (natural-armor "Natural Armor" character)
+        (when (> (length natural-armor) 0)
+          (format #t "| **Natural Armor:** ")
+          (loop for armor in natural-armor
+                for i from 1
+                when (> i 1) do (format #t "; ")
+                do (format #t "~A" armor))
+          (format #t "~%")))
+      (when-in-alist (natural-weapons "Natural Weapons" character)
+        (when (> (length natural-weapons) 0)
+          (format #t "| **Natural Weapons:** ")
+          (loop for weapon in natural-weapons
+                for i from 1
+                when (> i 1) do (format #t "; ")
+                do (format #t "~A" weapon))
+          (format #t "~%")))
+      (when-in-alist (special-defenses "Special Defenses" character)
+        (when (> (length special-defenses) 0)
+          (format #t "| **Special Defenses:** ")
+          (loop for defense in special-defenses
+                for i from 1
+                when (> i 1) do (format #t "; ")
+                do (format #t "~A" defense))
+          (format #t "~%")))
+      (when-in-alist (special-abilities "Special Abilities" character)
+        (when (> (length special-abilities) 0)
+          (format #t "| **Special Abilities:** ")
+          (loop for ability in special-abilities
+                for i from 1
+                when (> i 1) do (format #t "; ")
+                do (format #t "~A" ability))
+          (format #t "~%")))
+      (when-in-alist (hero-points "Hero_Points" character)
         (format #t "| **Hero Points:** ~A~%" hero-points))
-      (when-in-hash (fate-points "Fate_Points" character)
+      (when-in-alist (fate-points "Fate_Points" character)
         (format #t "| **Fate Points:** ~A~%" fate-points))
+      (when-in-alist (force-points "Force_Points" character)
+        (format #t "| **Force Points:** ~A~%" force-points))
       (cond (output-breachworld
-             (format #t "| **WL:** D:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–16 □~%")
+             (format #t "| **WL:** D:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")
              (format #t "| **SL:** S:1–8 □ SS:9+ □~%"))
             (else 
-             (format #t "| **WL:** S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–16 □~%")))))
+             (format #t "| **WL:** S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")))
+      ;; This is very output format dependent: .eps for groff -ms and
+      ;; pandoc -w ms, .png for pandoc -w html.
+      (when-in-alist (image "Image" character)
+        (format #t "~%.. image:: ~A~%" image)
+        (when outer-name 
+          (format #t   "   :alt: ~A~%" outer-name)))
+      (when output-notes
+        (when-in-alist (notes "Notes" character)
+          (cond
+           ((list? notes)
+            (when (> (length notes) 0)
+              (format #t "~%")
+              (loop for line in notes
+                    do (output-notes-line line))
+              (format #t "~%")))
+           ((string? notes)
+            (format #t "~A~%" notes))
+           (else
+            (die 5 "unrecognized Notes: not a list or string: ~S~%"
+                 notes)))))))
 
   (define (process-filename filename)
-    (let ((characters (with-input-from-file filename read-json)))
-      (loop for character across characters
+    (let ((ext (pathname-extension filename)))
+      (let ((characters
+             (cond ((and ext (string=? ext "json"))
+                    (with-input-from-file filename read-json))
+                   ((and ext (string=? ext "yaml"))
+                    (call-with-input-file filename
+                      (lambda (port) (yaml-load port))))
+                   (else
+                    (die 3 "unrecognized format: ~S in ~S~%" ext filename)))))
+      (loop for character in characters
 	    for i from 1
-	    when (> i 1) do (format #t "~%~%")
-	    do (print-character character))))
+	    when (> i 1) do (format #t "~%")
+	    do (print-character character)))))
 
   ;; We want 
   (json-parsers
    `(;; Don't change key to symbol
      (member . ,(lambda (name value) (cons name value)))
-     ;; Convert objects from alist to hash table
-     (object . ,(lambda (object) (alist->hash-table object)))
+     ;; Convert objects from array to list
+     (array . ,(lambda (a) a))
      ,@(json-parsers)))
 
   (define (usage)
@@ -168,32 +307,82 @@
 	(format #t "Current argv: ~s~%" (argv))))
     (exit 1))
 
-
-  (define output-generated #f)
-  (define output-player #t)
-  (define output-title #f)
   (define output-breachworld #f)
+  (define output-generated #f)
+  (define output-notes #t)
+  (define output-npc-format #f)
+  (define output-player-format #f)
+  (define output-player-name #t)
+  (define output-title #f)
+  (define sort-skills #t)
+
+  ;;(define chunk #f)
   (define debug #f)
+  (define underline #\-)
+  (define substitutes #f)
 
   (define opts
-    (list (args:make-option (b breachworld) #:none "Output different wound statuses for Breachworld"
-                            (set! output-breachworld (not output-breachworld)))
-          (args:make-option (d debug) #:none "Output character for debugging"
-                            (set! debug (not debug)))
-          (args:make-option (g generated) #:none "Output a generated date only if title specified."
-			    (set! output-generated (not output-generated)))
-          (args:make-option (p player) #:none "Toggle player name output (default ON)"
-			    (set! output-player (not output-player)))
-          (args:make-option (t title) #:required "Set title to output."
-                            (set! output-title arg))))
-	  
+    (list (args:make-option
+           (b breachworld) #:none "Output different wound track for Breachworld."
+           (set! output-breachworld (not output-breachworld)))
+          ;;(args:make-option (c chunk) #:none "Chunk output into separate files."
+          ;; (set! chunk #t))
+          (args:make-option
+           (d debug) #:none "Output character for debugging"
+           (set! debug (not debug)))
+          (args:make-option
+           (g generated) #:none
+           "Output a generated date only if title specified."
+           (set! output-generated (not output-generated)))
+	  (args:make-option
+           (h help) #:none "Display this text"
+           (usage))
+          (args:make-option
+           (n npc-format) #:none "Toggle NPC output format (default OFF)"
+	   (set! output-npc-format (not output-npc-format)))
+          (args:make-option
+           (N notes) #:none "Toggle Notes output (default ON)"
+	   (set! output-notes (not output-notes)))
+          (args:make-option
+           (P player-format) #:none
+           (string-append
+            "Toggle output in player format only (default OFF)\n"
+            "                          When this is set NEVER output in NPC format,\n"
+            "                          overriding presence of NPC key in character.")
+           (set! output-player-format (not output-player-format)))
+          (args:make-option
+           (p player-name) #:none "Toggle player name output (default ON)"
+           (set! output-player-name (not output-player-name)))
+          (args:make-option
+           (S sort-skills) #:none
+           "Toggle sort skills in player format (default ON)"
+           (set! sort-skills (not sort-skills)))
+          (args:make-option
+           (s substitute) #:required 
+           (string-append
+            "Substitute a whole line of the first character of ARG\n"
+            "                          with the second character of ARG throughout the\n"
+            "                          \"Notes:\" field.  Can be specified multiple times\n"
+            "                          to substitute multiple types of lines.")
+           ;; sm6rst -u @ -s -. -s '~#' test-files/test.json 
+           (assert (= (string-length arg) 2))
+           (let ((new (cons (irregex (string-append
+                                      "^" (substring arg 0 1) "+" "$"))
+                            (string-ref arg 1))))
+             (set! substitutes (if substitutes (cons new substitutes)
+                                   (list new)))))
+          (args:make-option
+           (t title) #:required "Set title to output."
+           (set! output-title arg))
+          (args:make-option
+           (u underline) #:required "Set character to use for underlining the header."
+           (set! underline (string-ref arg 0)))))
 
   (receive (options operands)
-      (args:parse (command-line-arguments)
-		  opts)
+      (args:parse (command-line-arguments) opts)
     (when #f
-      (format #t "output-player: ~A~%output-title: ~A~%" output-player
-              output-title)
+      (format #t "output-player-name: ~A~%output-title: ~A~%"
+              output-player-name output-title)
       (format #t "options: ~S~%operands: ~S~%" options operands))
 
     (when (= (length operands) 0)
