@@ -4,7 +4,7 @@
 (define kids-yaml 
   (call-with-input-file filename-yaml  (lambda (port) (yaml-load port))))
 
-(import srfi-69)
+(import (srfi 69))
 (import medea)
 
 (json-parsers
