@@ -16,9 +16,8 @@ proc diceToCost(diceString: string): int =
   var matches: array[3, string]
   if not match(diceString, diceRe, matches):
     raise newException(BadDiceError, fmt"Bad Dice Value: '{diceString}'")
-  (parseInt(matches[0]) * pipsPerDie) + (block:
-                                  if matches[2].len == 0: 0
-                                  else: parseInt(matches[2]))
+  (parseInt(matches[0]) * pipsPerDie) + (if matches[2].len == 0: 0
+                                         else: parseInt(matches[2]))
 
 proc costToDice(cost: int): string =
   let dice = cost div pipsPerDie
@@ -34,14 +33,15 @@ proc calculateCharacter(character: JsonNode) =
     totalSkillAndPerkCost = 0
   let
     name = character["Name"].getStr()
-    desc = character["Description"].getStr()
     player = character["Player"].getStr()
     statistics = if character.hasKey("Statistics"):
                    character["Statistics"].getElems.map(x => x.getStr())
                  else:
                    @["Might", "Agility", "Wit", "Charm"]
   echo fmt"Name: {name}"
-  echo fmt"    {desc}"
+  if character.hasKey ("Description"):
+    let desc = character["Description"].getStr()
+    echo fmt"    {desc}"
   echo fmt"Player: {player}"
   for statName in statistics:
     let statArray = character[statName]
