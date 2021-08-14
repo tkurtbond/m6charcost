@@ -1,6 +1,6 @@
 CP=cp
 
-PROGRAMS=sm6 sm6fmt sm6rst sm6troff-ms
+PROGRAMS=sm6 sm6fmt sm6rst sm6troff-ms yaml2scm json2scm
 OTHER_PROGRAMS=nm6 gm6 # Ignore om6 since I'm not working it right now.
 
 all: $(foreach P,$(PROGRAMS:%=%$(EXE)) $(OTHER_PROGRAMS:%=%$(EXE)),build/$(P)) 
