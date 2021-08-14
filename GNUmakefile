@@ -1,30 +1,42 @@
-PROGRAMS=sm6 sm6rst sm6troff
-OTHER_PROGRAMS=sm6fmt nm6 gm6 #ignore om6.native because ocaml on macOS is completely broken.
+CP=cp
 
-all: $(PROGRAMS:%=%$(EXE)) $(OTHER_PROGRAMS:%=%$(EXE)) 
+PROGRAMS=sm6 sm6rst sm6troff-ms
+OTHER_PROGRAMS=nm6 gm6 # sm6fmt is obsolete.  ignore om6.native because ocaml on macOS is completely broken.
+
+all: $(foreach P,$(PROGRAMS:%=%$(EXE)) $(OTHER_PROGRAMS:%=%$(EXE)),build/$(P)) 
 
 
 #CSCFLAGS=-static
 
-% : %.go
+build/% : %.go
 	go build -o $@ $<
 
 
-% : %.scm
-	csc $(CSCFLAGS) $^
+build/% : %.scm
+	csc $(CSCFLAGS) -o $@ $<
 
 
 %.native : %.ml
 	corebuild -pkg yojson $@
 
 
-% : %.nim
-	nim compile --hints:off --colors:off $^
+build/% : %.nim
+	nim compile --hints:off --colors:off -o:$@ $^
 
-INSTALLDIR=$(shell eval dir='~/local/bin/'; echo $$dir)
 
-install: $(PROGRAMS:%=%$(EXE))
-	install -D -t $(INSTALLDIR) $^
+INSTALLDIR=$(shell eval dir='~/local/bin'; echo $$dir)
+
+#install: $(PROGRAMS:%=%$(EXE))
+#	install -D -t $(INSTALLDIR) $^
+
+$(INSTALLDIR)/% : build/%
+	$(CP) $< $@
+
+install: $(foreach p,$(PROGRAMS:%=%$(EXE)),$(INSTALLDIR)/$(p))
+
+print:
+	echo $(INSTALLDIR)
+	echo $(foreach p,$(PROGRAMS:%=%$(EXE)),$(INSTALLDIR)/$(p))
 
 clean:
 	-rm $(PROGRAMS:%=%$(EXE)) $(OTHER_PROGRAMS:%=%$(EXE)) 
