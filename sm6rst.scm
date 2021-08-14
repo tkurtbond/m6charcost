@@ -294,7 +294,7 @@
   (json-parsers
    `(;; Don't change key to symbol
      (member . ,(lambda (name value) (cons name value)))
-     ;; Convert objects from array to list
+     ;; Convert arrays to list
      (array . ,(lambda (a) a))
      ,@(json-parsers)))
 
