@@ -168,6 +168,12 @@
                 when (> i 1) do (format #t ", ")
                 do (format #t "~A" spell))
           (format #t "~%")))
+      (when-in-alist (hero-points "Hero_Points" character)
+                     (format #t "| **Hero Points:** ~A~%" hero-points))
+      (when-in-alist (fate-points "Fate_Points" character)
+                     (format #t "| **Fate Points:** ~A~%" fate-points))
+      (when-in-alist (force-points "Force_Points" character)
+                     (format #t "| **Force Points:** ~A~%" force-points))
       (when-in-alist (gear "Gear" character)
         (when (> (length gear) 0)
           (format #t "| **Gear:** ")
@@ -200,6 +206,11 @@
                            (format #t "~A" defense))))
                (format #t "~%"))
               (else (format #t "| **Defenses:** ~A~%" defenses))))
+      (cond (output-breachworld
+             (format #t "| **WL:** D:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")
+             (format #t "| **SL:** S:1–8 □ SS:9+ □~%"))
+            (else 
+             (format #t "| **WL:** S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")))
       (when-in-alist (move "Move" character)
         (format #t "| **Move:** ~A~%" move))
       (when-in-alist (melee "Melee" character)
@@ -250,17 +261,6 @@
                 when (> i 1) do (format #t "; ")
                 do (format #t "~A" ability))
           (format #t "~%")))
-      (when-in-alist (hero-points "Hero_Points" character)
-        (format #t "| **Hero Points:** ~A~%" hero-points))
-      (when-in-alist (fate-points "Fate_Points" character)
-        (format #t "| **Fate Points:** ~A~%" fate-points))
-      (when-in-alist (force-points "Force_Points" character)
-        (format #t "| **Force Points:** ~A~%" force-points))
-      (cond (output-breachworld
-             (format #t "| **WL:** D:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")
-             (format #t "| **SL:** S:1–8 □ SS:9+ □~%"))
-            (else 
-             (format #t "| **WL:** S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")))
       ;; This is very output format dependent: .eps for groff -ms and
       ;; pandoc -w ms, .png for pandoc -w html.
       (when-in-alist (image "Image" character)

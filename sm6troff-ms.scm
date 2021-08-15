@@ -155,6 +155,12 @@
                 when (> i 1) do (format #t ", ")
                 do (format #t "~A" spell))
           (format #t "~%.br~%")))
+      (when-in-alist (hero-points "Hero_Points" character)
+        (format #t "\\fBHero Points:\\fP ~A~%.br~%" hero-points))
+      (when-in-alist (fate-points "Fate_Points" character)
+        (format #t "\\fBFate Points:\\fP ~A~%.br~%" fate-points))
+      (when-in-alist (force-points "Force_Points" character)
+        (format #t "\\fBForce Points:\\fP ~A~%.br~%" force-points))
       (when-in-alist (gear "Gear" character)
         (when (> (length gear) 0)
           (format #t "\\fBGear:\\fP ")
@@ -187,6 +193,11 @@
                            (format #t "~A" defense))))
                (format #t "~%.br~%"))
               (else (format #t "\\fBDefenses:\\fP ~A~%.br~%" defenses))))
+      (cond (output-breachworld
+             (format #t "\\fBWL:\\fP D:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")
+             (format #t "\\fBSL:\\fP S:1–8 □ SS:9+ □~%"))
+            (else
+             (format #t "\\fBWL:\\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")))
       (when-in-alist (move "Move" character)
         (format #t "\\fBMove:\\fP ~A~%.br~%" move))
       (when-in-alist (melee "Melee" character)
@@ -237,17 +248,6 @@
                 when (> i 1) do (format #t "; ")
                 do (format #t "~A" ability))
           (format #t "~%.br~%")))
-      (when-in-alist (hero-points "Hero_Points" character)
-        (format #t "\\fBHero Points:\\fP ~A~%.br~%" hero-points))
-      (when-in-alist (fate-points "Fate_Points" character)
-        (format #t "\\fBFate Points:\\fP ~A~%.br~%" fate-points))
-      (when-in-alist (force-points "Force_Points" character)
-        (format #t "\\fBForce Points:\\fP ~A~%.br~%" force-points))
-      (cond (output-breachworld
-             (format #t "\\fBWL:\\fP D:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")
-             (format #t "\\fBSL:\\fP S:1–8 □ SS:9+ □~%"))
-            (else
-             (format #t "\\fBWL:\\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □~%")))
       ;; Can we implement "Image" usefully?
       ;; This is very output format dependent: .eps for groff -ms and
       ;; pandoc -w ms, .png for pandoc -w html.
