@@ -108,6 +108,16 @@ The reStructuredText output from that looks like:
      that also holds 3 pounds of lead sling bullets.
    • Your chainmail has multicolored links that make up a pattern.
 
+The command
+
+.. code:: bash
+
+   sm6troff-ms -s -2 -H Bersaba-Kitto.yaml | groff -k -Tpdf -ms
+
+ produces PDF output that looks like this:
+
+.. image:: docs/Bersaba-Kitto.png
+
 These programs can also be used for Mini Six derived or related RPGs
 such as the `Breachworld RPG`_.
 
