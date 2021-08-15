@@ -28,3 +28,4 @@ Todo for my Mini Six character costing program
 • Make them work for no attributes?
 • Write a GUI character generator?  Probably javascript on the web?
 • ✓When no filenames are specified read stdin.
+• ✓Read stdin if filename - specified.
