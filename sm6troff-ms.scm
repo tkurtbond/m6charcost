@@ -296,6 +296,7 @@
 	(format #t "Current argv: ~s~%" (argv))))
     (exit 1))
 
+  (define font-family "P")     ; Default to standard groff font family.
   (define header-level 1)
   (define output-breachworld #f)
   (define output-generated #f)
@@ -321,6 +322,10 @@
            (b breachworld) #:none
            "Output different wound track for Breachworld.  (default OFF)"
            (set! output-breachworld (not output-breachworld)))
+          (args:make-option
+           (f family) #:required
+           "Use ARG for font family"
+           (set! font-family arg))
           (args:make-option
            (g generated) #:none
            "Output a generated date only if title specified."
@@ -378,7 +383,7 @@
 
     ;; Output troff -ms setup.
     (when output-setup
-      (format #t "~A" ".\\\" text width
+      (format #t "~A" (string-append ".\\\" text width
 .nr LL 7i
 .\\\" left margin
 .nr PO 0.75i
@@ -393,7 +398,7 @@
 .\\\" line height
 .nr VS 12p
 .\\\" font family: A, BM, H, HN, N, P, T, ZCM
-.fam EBGaramond
+.fam " font-family "
 .\\\" paragraph indent
 .nr PI 0m
 .\\\" Quote indent
@@ -443,7 +448,7 @@
 .nr cov*n-au 0
 .DEVTAG-TL
 ..
-"))
+")))
     
     (when output-title
       (format #t ".TL~%~A~%.MC 3.4i 0.2i~%" output-title)
