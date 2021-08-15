@@ -5,7 +5,10 @@ This contains programs for reading YAML_ and JSON_ files representing
 `Mini Six` (M1_, M2_) characters and calculating their cost as
 starting characters, as well as for producing output in
 reStructuredText_ (for typesetting or converting to HTML) and roff_
-(for typesetting using a program such as groff_).
+(for typesetting using a program such as groff_).  In addition to
+checking if the characters have been built using the proper number of
+dice for attributes, skills, and perks, it gives something of a way to
+compare characters for level of threat.
 
 `Mini Six` is an OpenD6 (O1_, O2_, O3_) derived tabletop roleplaying
 game. 
@@ -36,10 +39,10 @@ The primary programs are all written in `CHICKEN Scheme`_:
   documents or typesetting.
 
 There are several implementations of the character cost calculating
-program in other programming languages which I wrote in other
-languages as an exercise in comparing how they dealt with JSON and/or
-YAML.  None of them are as complete as the Scheme versions.  The
-OCaml_ version, ``om6.ml``, was never completed.
+program in other programming languages which I wrote as an exercise in
+comparing how they dealt with JSON and/or YAML.  None of them are as
+complete as the Scheme versions.  The OCaml_ version, ``om6.ml``, was
+never completed.
 
 .. _OCaml: https://ocaml.org/
 
