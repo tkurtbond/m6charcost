@@ -24,9 +24,12 @@
   Hero_Points: 2
   Notes: |
     Notes
-    -----
+    ~~~~~
 
     • One of your spells is a game breaker, I think.
     • Your sling is stored coiled up in an elegantly decorated pouch
       that also holds 3 pounds of lead sling bullets.
     • Your chainmail has multicolored links that make up a pattern.
+### Local Variables:
+### compile-command: "yamllint -f parsable Bersaba-Kitto.yaml"
+### End:
