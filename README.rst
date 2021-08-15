@@ -1,7 +1,7 @@
 Mini Six Character Cost Calculator
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-This contains programs for reading JSON_ and YAML_ files representing
+This contains programs for reading YAML_ and JSON_ files representing
 `Mini Six` (M1_, M2_) characters and calculating their cost as
 starting characters, as well as for producing output in
 reStructuredText_ (for typesetting or converting to HTML) and roff_
