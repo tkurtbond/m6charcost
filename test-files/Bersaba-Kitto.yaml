@@ -1,0 +1,32 @@
+---
+- Name: Bersaba Kitto
+  Archetype: elegant sorcerer
+  Quote: What should I change into?
+  Description: Tall, willowy, elegant, and abstracted.
+  Player: Lily Bond
+  Might: [3D, [Sword, 5D]]
+  Agility: [3D, [Dodge, 5D], [Sling, 4D]]
+  Wit: [4D, [Magic, 6D]]
+  Charm: [2D]
+  Static: [[Dodge, 15], [Block, 9], ['Parry (Sword)', 15], [Soak, 9(15))]]
+  Perks: [[Sorcerer, 3D]]
+  Gear:
+    - Sword (+2D+2)
+    - Chainmail (+6)
+    - Elegant clothes
+    - Knife (+1D)
+    - Sling (+2D+1, 40/130/400), 48 lead sling bullets
+  Spells:
+    - Fly
+    - Hasten
+    - See Magic Aura
+    - Shape Change
+  Hero_Points: 2
+  Notes: |
+    Notes
+    -----
+
+    • One of your spells is a game breaker, I think.
+    • Your sling is stored coiled up in an elegantly decorated pouch
+      that also holds 3 pounds of lead sling bullets.
+    • Your chainmail has multicolored links that make up a pattern.
