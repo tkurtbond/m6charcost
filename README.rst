@@ -1,11 +1,11 @@
-Mini Six Character Cost Calculator
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Mini Six Character Cost Calculator and Formatters
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 This contains programs for reading YAML_ and JSON_ files representing
 `Mini Six` (M1_, M2_) characters and calculating their cost as
 starting characters, as well as for producing output in
 reStructuredText_ (for typesetting or converting to HTML) and roff_
-(for typesetting).
+(for typesetting using a program such as groff_).
 
 `Mini Six` is an OpenD6 (O1_, O2_, O3_) derived tabletop roleplaying
 game. 
@@ -20,6 +20,7 @@ game.
 .. _O2: https://opend6.fandom.com/wiki/OpenD6
 .. _O3: http://opend6project.org/
 .. _CHICKEN Scheme: https://call-cc.org/
+.. _groff: https://www.gnu.org/software/groff/
 
 The primary programs are all written in `CHICKEN Scheme`_:
 
