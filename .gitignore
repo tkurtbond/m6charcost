@@ -2,6 +2,7 @@
 *~
 .DS_Store
 \#*\#
+build/**
 .\#*
 _build
 ecl-m6/lm6
