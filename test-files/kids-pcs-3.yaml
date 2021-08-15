@@ -1,5 +1,4 @@
-# kids-pcs-3.yaml - This version is ok except Miagro is 6 points over.
-# 2020-11-28
+---
 - Name: 'J''Lee'
   Archetype: Bounty Hunter
   Description: One side of head is shaved.
@@ -53,3 +52,6 @@
          clothes, glowrod, "macro binoculars", "body armor (+6)"]
   Hero_Points: 1
   Static: "Dodge 9, Block 12, Parry 18 (lightsaber), Soak 12+6=18"
+### Local Variables:
+### compile-command: "yamllint -f parsable kids-pcs-3.yaml"
+### End:

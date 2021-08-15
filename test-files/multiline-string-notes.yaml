@@ -16,7 +16,7 @@
   Hero_Points: 2
   Notes: |
     Perks
-    -----
+    ~~~~~
 
     **Perceptive (2):** The GM may reveal small clues to you that others
     would miss. Once per session a character may announce they are
@@ -28,9 +28,6 @@
     **Recall (1):** Any time the character chooses to recall anything he
     has experienced, the GM must tell him the truth in as much detail
     as the character would have been aware.
-
-
 ### Local Variables:
-### compile-command: "yamllint -c ~/.config/yamllint/config -f parsable multiline-string-notes.yaml"
+### compile-command: "yamllint -f parsable multiline-string-notes.yaml"
 ### End:
-

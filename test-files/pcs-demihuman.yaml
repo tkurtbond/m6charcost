@@ -14,12 +14,13 @@
 ### - Parry = (3 * Weapon skill dice) + pips
 ### - Soak  = (3 * Might attribute dice) + pips
 ###############################################################################
+---
 - Name: 'Brannok Berryman'
   Description: 'Elven Ranger'
   Might: [2D, [Sword, 4D]]
   Agility: [5D, [Bow, 7D], [Dodge, 6D]]
   Wit: [3D, [Search, 4D], [Tracking, 5D]]
-  Charm: [2D, ]
+  Charm: [2D]
   Perks: [[Elf, 2]]
   Gear: ["Bow +2D+2 (30/100/300)", "Leather (+2)", "Sword +2D+2"]
   Static: [[Dodge, 18], [Block, 6], [Parry, 15], [Soak, 6(8)]]
@@ -27,7 +28,7 @@
   Description: 'Dwarven Fighter'
   Might: [5D, [Axe, 7D], [Brawling, 6D]]
   Agility: [3D, [Crossbow, 4D], [Dodge, 5D]]
-  Wit: [2D,]
+  Wit: [2D]
   Charm: [2D, [Command, 5D]]
   Perks: [[Dwarf, 1]]
   Gear: ["Axe, +3D", "Chainmail (+6)", "Crossbow, 4D+1"]
@@ -35,10 +36,10 @@
 - Name: 'Ryd Colenso'
   Description: 'Elven Rogue'
   Might: [2D, [Sword, 3D]]
-  Agility: [5D, [Athletics, 6D], [Bow, 5D], [Dodge, 7D], [Pickpockets, 5D], 
+  Agility: [5D, [Athletics, 6D], [Bow, 5D], [Dodge, 7D], [Pickpockets, 5D],
             [Stealth, 6D]]
   Wit: [3D, ["Pick Locks", 5D], [Search, 4D]]
-  Charm: [2D, ]
+  Charm: [2D]
   Perks: [[Elf, 2]]
   Gear: ["Bow +2D+2 (30/100/300)", "Leather (+2)", "Lock Picks", "Sword +2D+2"]
   Static: [[Dodge, 21], [Block, 6], [Parry, 9], [Soak, 6(8)]]
@@ -47,7 +48,7 @@
   Might: [3D, [Sword, 3D]]
   Agility: [2D, [Dodge, 3D], [Throwing, 4D]]
   Wit: [4D, [History, 5D], [Language, 5D], [Magic, 6D]]
-  Charm: [3D, ]
+  Charm: [3D]
   Perks: [[Sorcerer, 3]]
   Spells: [Charm, Invisibility, "Lightning Bolt", Teleport]
   Gear: ["Leather (+2)", "Sword +2D+2"]
@@ -65,8 +66,11 @@
   Might: [3D, [Sword, 3D]]
   Agility: [3D, [Bow, 4D], [Dodge, 5D]]
   Wit: [4D, [Magic, 6D], [Medicine, 6D]]
-  Charm: [2D, ]
+  Charm: [2D]
   Perks: [[Sorcerer, 3]]
   Spells: [ESP, Heal, Light, Slumber]
   Gear: ["Bow +2D+2 (30/100/300)", "Leather (+2)", "Sword +2D+2"]
   Static: [[Dodge, 15], [Block, 9], [Parry, 9], [Soak, 9(11)]]
+### Local Variables:
+### compile-command: "yamllint -f parsable pcs-demihuman.yaml"
+### End:
