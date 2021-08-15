@@ -71,7 +71,7 @@ A typical Mini Six character expressed in YAML_ looks like this:
      Hero_Points: 2
      Notes: |
        Notes
-       -----
+       ~~~~~
 
        • One of your spells is a game breaker, I think.
        • Your sling is stored coiled up in an elegantly decorated pouch
@@ -101,7 +101,7 @@ The reStructuredText output from that looks like:
    | **WL:** S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □
 
    Notes
-   -----
+   ~~~~~
 
    • One of your spells is a game breaker, I think.
    • Your sling is stored coiled up in an elegantly decorated pouch
