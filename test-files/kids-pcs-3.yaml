@@ -26,6 +26,8 @@
          "macro binoculars", "glowrod", "body armor (+6)"]
   Hero_Points: 1
   Static: "Dodge 16, Block 12, Parry 17 (pistol), Soak 9+6=15"
+  Notes: |
+    Languages: Basic, Huttese
 - Name: Miagro
   Archetype: Cyborg
   Player: Mason Atha
