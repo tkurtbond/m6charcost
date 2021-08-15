@@ -112,9 +112,9 @@ The command
 
 .. code:: bash
 
-   sm6troff-ms -s -2 -H Bersaba-Kitto.yaml | groff -k -Tpdf -ms
+   sm6troff-ms -s -2 -H test-files/Bersaba-Kitto.yaml | groff -k -Tpdf -ms
 
- produces PDF output that looks like this:
+produces PDF output that looks like this:
 
 .. image:: docs/Bersaba-Kitto.png
 
