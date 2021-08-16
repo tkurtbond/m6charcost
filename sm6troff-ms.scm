@@ -296,7 +296,7 @@
 	(format #t "Current argv: ~s~%" (argv))))
     (exit 1))
 
-  (define font-family "P")     ; Default to standard groff font family.
+  (define font-family "P")     ; Default to a standard groff font family.
   (define header-level 1)
   (define output-breachworld #f)
   (define output-generated #f)
