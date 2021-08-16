@@ -1,12 +1,12 @@
-Todo for my Mini Six character costing program
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Todo for my Mini Six character costing and formatting programs
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 • Read all the Mini Six products (including Exilium and Esoterica and
   Summerland) and compare the formats for character and NPC stats.
 • ½sm6*.scm: Figure out the order things should be in, especially with
   respect to things I've added.  (Melee, Ranged, Natural Weapons,
   Special Abilities, etc.)
-• sm6troff-ms
+• ✓sm6troff-ms
   - Set the header level like I set the underlines in sm6rst?
   - Add option to set the font family?
 • ✓ms6rst.scm sm6troff-ms.scm:
