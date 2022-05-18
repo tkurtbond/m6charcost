@@ -1,11 +1,14 @@
-Mini Six Character Cost Calculator
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Mini Six Character Cost Calculator and Formatters
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-This contains programs for reading JSON_ and YAML_ files representing
+This contains programs for reading YAML_ and JSON_ files representing
 `Mini Six` (M1_, M2_) characters and calculating their cost as
 starting characters, as well as for producing output in
 reStructuredText_ (for typesetting or converting to HTML) and roff_
-(for typesetting).
+(for typesetting using a program such as groff_).  In addition to
+checking if the characters have been built using the proper number of
+dice for attributes, skills, and perks, it gives something of a way to
+compare characters for level of threat.
 
 `Mini Six` is an OpenD6 (O1_, O2_, O3_) derived tabletop roleplaying
 game. 
@@ -20,6 +23,7 @@ game.
 .. _O2: https://opend6.fandom.com/wiki/OpenD6
 .. _O3: http://opend6project.org/
 .. _CHICKEN Scheme: https://call-cc.org/
+.. _groff: https://www.gnu.org/software/groff/
 
 The primary programs are all written in `CHICKEN Scheme`_:
 
@@ -35,10 +39,10 @@ The primary programs are all written in `CHICKEN Scheme`_:
   documents or typesetting.
 
 There are several implementations of the character cost calculating
-program in other programming languages which I wrote in other
-languages as an exercise in comparing how they dealt with JSON and/or
-YAML.  None of them are as complete as the Scheme versions.  The
-OCaml_ version, ``om6.ml``, was never completed.
+program in other programming languages which I wrote as an exercise in
+comparing how they dealt with JSON and/or YAML.  None of them are as
+complete as the Scheme versions.  The OCaml_ version, ``om6.ml``, was
+never completed.
 
 .. _OCaml: https://ocaml.org/
 
@@ -71,7 +75,7 @@ A typical Mini Six character expressed in YAML_ looks like this:
      Hero_Points: 2
      Notes: |
        Notes
-       -----
+       ~~~~~
 
        • One of your spells is a game breaker, I think.
        • Your sling is stored coiled up in an elegantly decorated pouch
@@ -101,12 +105,22 @@ The reStructuredText output from that looks like:
    | **WL:** S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □
 
    Notes
-   -----
+   ~~~~~
 
    • One of your spells is a game breaker, I think.
    • Your sling is stored coiled up in an elegantly decorated pouch
      that also holds 3 pounds of lead sling bullets.
    • Your chainmail has multicolored links that make up a pattern.
+
+The command
+
+.. code:: bash
+
+   sm6troff-ms -s -2 -H test-files/Bersaba-Kitto.yaml | groff -k -Tpdf -ms
+
+produces PDF output that looks like this:
+
+.. image:: docs/Bersaba-Kitto.png
 
 These programs can also be used for Mini Six derived or related RPGs
 such as the `Breachworld RPG`_.

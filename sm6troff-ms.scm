@@ -104,7 +104,7 @@
             (else 
              (format #t ".sp 1v~%.LP~%\\fB\\s[+6]~A\\s0\\fP~%.LP~%" header)))
       (when-in-alist (quote "Quote" character)
-        (format #t "\\fI“~A”\\fP~%~%" quote))
+        (format #t "\\fI“~A”\\fP~%.LP~%" quote))
       (when-in-alist (description "Description" character)
         (format #t "~A~%" description)
         (format #t ".LP~%"))
@@ -296,6 +296,7 @@
 	(format #t "Current argv: ~s~%" (argv))))
     (exit 1))
 
+  (define font-family "P")     ; Default to a standard groff font family.
   (define header-level 1)
   (define output-breachworld #f)
   (define output-generated #f)
@@ -305,16 +306,26 @@
   (define output-number-header #f)
   (define output-player-format #f)
   (define output-player-name #t)
+  (define output-setup #t)
   (define output-title #f)
   (define sort-skills #t)
   (define use-yaml #f)
   (define use-json #f)
+  (define use-two-columns #f)
 
   (define opts
     (list (args:make-option
+           (|2| two-columns) #:none
+           "Toggle use of two columns (default OFF)"
+           (set! use-two-columns (not use-two-columns)))
+          (args:make-option
            (b breachworld) #:none
-           "Output different wound track for Breachworld."
+           "Output different wound track for Breachworld.  (default OFF)"
            (set! output-breachworld (not output-breachworld)))
+          (args:make-option
+           (f family) #:required
+           "Use ARG for font family"
+           (set! font-family arg))
           (args:make-option
            (g generated) #:none
            "Output a generated date only if title specified."
@@ -357,6 +368,9 @@
            "Toggle sort skills in player format (default ON)"
            (set! sort-skills (not sort-skills)))
           (args:make-option
+           (s setup) #:none "Toggle output of roff setup (default ON)"
+           (set! output-setup (not output-setup)))
+          (args:make-option
            (t title) #:required "Set title to output."
            (set! output-title arg))
           (args:make-option
@@ -368,7 +382,8 @@
       (args:parse (command-line-arguments) opts)
 
     ;; Output troff -ms setup.
-    (format #t "~A" ".\\\" text width
+    (when output-setup
+      (format #t "~A" (string-append ".\\\" text width
 .nr LL 7i
 .\\\" left margin
 .nr PO 0.75i
@@ -383,7 +398,7 @@
 .\\\" line height
 .nr VS 12p
 .\\\" font family: A, BM, H, HN, N, P, T, ZCM
-.fam EBGaramond
+.fam " font-family "
 .\\\" paragraph indent
 .nr PI 0m
 .\\\" Quote indent
@@ -433,13 +448,16 @@
 .nr cov*n-au 0
 .DEVTAG-TL
 ..
-")
-
+")))
+    
     (when output-title
       (format #t ".TL~%~A~%.MC 3.4i 0.2i~%" output-title)
       (when output-generated
         (format #t ".LP~%\\fIGenerated: ~A\\fP~%"
                 (date->string (current-date) "~Y-~m-~d ~T (~A, ~e ~B ~Y)"))))
+
+    (when use-two-columns
+      (format #t ".2C~%"))
 
     (cond ((= (length operands) 0)
            (process-filename "-"))

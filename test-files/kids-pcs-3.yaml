@@ -26,6 +26,8 @@
          "macro binoculars", "glowrod", "body armor (+6)"]
   Hero_Points: 1
   Static: "Dodge 16, Block 12, Parry 17 (pistol), Soak 9+6=15"
+  Notes: |
+    Languages: Basic, Huttese
 - Name: Miagro
   Archetype: Cyborg
   Player: Mason Atha
@@ -42,11 +44,11 @@
 - Name: Anna Nemus
   Archetype: Jedi
   Player: Lily Bond
-  Might: [4D, [Lightsaber, 6D]]
+  Might: [4D, ["Plasma Sword", 6D]]
   Agility: [3D, [Pistol, 5D], [Stealth, 5D]]
-  Wit: [3D, [History, 4D], ["The Force", 6D+1]]
+  Wit: [3D, [History, 4D], [Magic, 6D+1]]
   Charm: [2D]
-  Perks: [[Jedi, 3D]]
+  Perks: [[Sorcerer, 3D]]
   Powers: [bless, charm, illusions, paralysis, "sense danger (p. 31)"]
   Gear: ["plasma sword (+4D)", "blaster pistol (5D)", "flight suit (+2)",
          clothes, glowrod, "macro binoculars", "body armor (+6)"]
