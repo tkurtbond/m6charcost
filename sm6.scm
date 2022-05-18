@@ -18,6 +18,17 @@
   (import (chicken port))
   (import (chicken process-context))
 
+  (define debugging #f)
+  (define dbg
+    (if debugging
+      (lambda args
+        (format (current-error-port) "~A: dbg: " (program-name))
+        (apply format (cons (current-error-port) args))
+        (format (current-error-port) "\n")
+        (flush-output (current-error-port)))
+      (lambda args #f)))
+
+
   (define (die status . args)
     (format (current-error-port) "~A: fatal error: " (program-name))
     (apply format (cons (current-error-port) args))
@@ -90,6 +101,7 @@
       ;; TODO: Check where skills listed, with stats or under 'skills'
       ;; 
       ;; This works for absolute skills listed with stats.
+      (dbg "before statistics")
       (do-list stat-name statistics
 	(unless (assoc stat-name character)
 	  (die 1 "Missing stat name: ~A" stat-name))
@@ -113,6 +125,7 @@
 				   (format #f "~a: ~a" skill-name skill-dice)
 				   relative-dice
 				   relative-cost)))))))))
+      (dbg "before perks")
       (when-in-alist (perks "Perks" character)
 	(format #t "Perks:~%")
 	(loop for perk in perks
@@ -123,6 +136,7 @@
 		     (format #t "    ~26A (~3D points)~%"
 			     (format #f "~A: ~A" perk-name perk-dice)
 			     perk-cost)))))
+      (dbg "before totals")
       (let* ((total-stat-dice (cost-to-dice total-stat-cost))
              (total-stat-increase-cost (- total-stat-cost *default-stat-cost*))
              (total-stat-increase-dice (cost-to-dice total-stat-increase-cost))
