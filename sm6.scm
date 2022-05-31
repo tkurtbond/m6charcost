@@ -103,6 +103,7 @@
       ;; This works for absolute skills listed with stats.
       (dbg "before statistics")
       (do-list stat-name statistics
+        (dbg "stat: ~a" stat-name)
 	(unless (assoc stat-name character)
 	  (die 1 "Missing stat name: ~A" stat-name))
 	(let ((stat-value (assoc stat-name character)))
@@ -113,6 +114,7 @@
 	   	    (format #f "~a: ~a" stat-name stat-dice) stat-cost)
 	    (loop for skill in skills
 		  do (begin
+                       (dbg "skill: ~a" skill)
 		       (match-let (((skill-name skill-dice) skill))
 			 (let* ((skill-cost (dice-to-cost skill-dice))
 				(relative-cost (- skill-cost stat-cost))
