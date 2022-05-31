@@ -20,14 +20,13 @@
 
   (define debugging #f)
   (define dbg
-    (if debugging
-      (lambda args
-        (format (current-error-port) "~A: dbg: " (program-name))
-        (apply format (cons (current-error-port) args))
-        (format (current-error-port) "\n")
-        (flush-output (current-error-port)))
-      (lambda args #f)))
-
+    (lambda args
+      (cond (debugging
+             (format (current-error-port) "~A: dbg: " (program-name))
+             (apply format (cons (current-error-port) args))
+             (format (current-error-port) "\n")
+             (flush-output (current-error-port)))
+            (else #f))))
 
   (define (die status . args)
     (format (current-error-port) "~A: fatal error: " (program-name))
@@ -208,11 +207,12 @@
   (define use-json #f)
 
   (define opts
-    (list (args:make-option
-           (j json) #:none "Assume input file is json."
-           (set! use-json #t))
-          (args:make-option
-           (y yaml) #:none "Assume input file is yaml."
+    (list (args:make-option (d debug)
+              #:none "Turn on debugging.  Useful when your input is not correct"
+            (set! debugging #t))
+          (args:make-option (j json) #:none "Assume input file is json."
+            (set! use-json #t))
+          (args:make-option (y yaml) #:none "Assume input file is yaml."
            (set! use-yaml #t))))
 
   (receive (options operands)
