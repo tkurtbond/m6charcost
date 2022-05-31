@@ -110,7 +110,9 @@
       ;; No, use a hypen-minus, because it appears in the PDF outline, and
       ;; groff doesn't get non-ascii characters right in that.
       (when-in-alist (archetype "Archetype" character)
-	(set! header (format #f "~A - ~A" header archetype)))
+        (if (= 0 (string-length header))
+            (set! header (format #f "~A" archetype))
+	    (set! header (format #f "~A - ~A" header archetype))))
       (when-in-alist (number "Number" character)
 	(set! header (format #f "~A ×~A" header number)))
       (when output-player-name
