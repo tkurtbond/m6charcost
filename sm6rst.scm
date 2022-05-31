@@ -134,24 +134,26 @@
           (print-npc-attributes-and-skills character statistics)
           (print-pc-attributes-and-skills character statistics))
       (when-in-alist (perks "Perks" character)
-        (when (> (length perks) 0)
-	  (format #t "| **Perks:** ")
-	  (loop for perk in perks
-                for i from 1
-                when (> i 1) do (format #t ", ")
-	        do (match-let (((perk-name perk-dice) perk))
-                     ;; we don't care what it cost since we're not
-                     ;; calculating costs.
-                     (format #t "~A" perk-name)))
-          (format #t "~%")))
+        (cond ((> (length perks) 0)
+	       (format #t "| **Perks:** ")
+	       (loop for perk in perks
+                     for i from 1
+                     when (> i 1) do (format #t ", ")
+	             do (match-let (((perk-name perk-dice) perk))
+                          ;; we don't care what it cost since we're not
+                          ;; calculating costs.
+                          (format #t "~A" perk-name)))
+               (format #t "~%"))
+              (else (format #t "| **Perks:** None~%"))))
       (when-in-alist (complications "Complications" character)
-        (when (> (length complications) 0)
-          (format #t "| **Complications:** ")
-          (loop for complication in complications
-                for i from 1
-                when (> i 1) do (format #t ", ")
-                do (format #t "~A" complication))
-          (format #t "~%")))
+        (cond ((> (length complications) 0)
+               (format #t "| **Comps:** ")
+               (loop for complication in complications
+                     for i from 1
+                     when (> i 1) do (format #t ", ")
+                     do (format #t "~A" complication))
+               (format #t "~%"))
+              (else (format #t "| **Comps:** None~%"))))
       ;; Powers and Spells come (almost) right after Perks, because that's
       ;; where Sorcerer will be.
       (when-in-alist (powers "Powers" character)
