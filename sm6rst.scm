@@ -1,4 +1,4 @@
-;;; sm6rst.scm - Convert Mini-Six Characters in JSON to ReStructuredText.
+;;; sm6rst.scm - Convert Mini-Six Characters in JSON to reStructuredText.
 ;;;
 ;;; Remember: ~/current/RPG/the-kids/Mini-Six/Star-Wars/kids-pcs/kids-pcs-3.json
 (module sm6rst ()
@@ -131,25 +131,42 @@
                (not output-player-format))
           (print-npc-attributes-and-skills character statistics)
           (print-pc-attributes-and-skills character statistics))
-      (when-in-alist (perks "Perks" character)
-        (when (> (length perks) 0)
-	  (format #t "| **Perks:** ")
-	  (loop for perk in perks
-                for i from 1
-                when (> i 1) do (format #t ", ")
-	        do (match-let (((perk-name perk-dice) perk))
-                     ;; we don't care what it cost since we're not
-                     ;; calculating costs.
-                     (format #t "~A" perk-name)))
-          (format #t "~%")))
-      (when-in-alist (complications "Complications" character)
-        (when (> (length complications) 0)
-          (format #t "| **Complications:** ")
-          (loop for complication in complications
-                for i from 1
-                when (> i 1) do (format #t ", ")
-                do (format #t "~A" complication))
-          (format #t "~%")))
+      (cond ((output-combined
+              (let ((combined
+                     (append 
+                      (when-in-alist (perks "Perks" character)
+                        (loop for perk in perks
+                              collect (match-let (((perk-name perk-dice) perk))
+                                        perk-name)))
+                      (when-in-alist (comps "Complications" character)
+                        (loop for comp in comps
+                              collect (match-let (((comp-name comp-dice) comp))
+                                        comp-name))))))
+                (unless (null? combined)
+                  (format #t "| **Perks & Comps:** ")
+                  (loop for item in combined for i from 1
+                        when (> i 1) do (format #t ", ")
+                        do (format #t "~A" item))))))
+            (else
+             (when-in-alist (perks "Perks" character)
+               (when (> (length perks) 0)
+	         (format #t "| **Perks:** ")
+	         (loop for perk in perks
+                       for i from 1
+                       when (> i 1) do (format #t ", ")
+	               do (match-let (((perk-name perk-dice) perk))
+                            ;; we don't care what it cost since we're not
+                            ;; calculating costs.
+                            (format #t "~A" perk-name)))
+                 (format #t "~%")))
+             (when-in-alist (complications "Complications" character)
+               (when (> (length complications) 0)
+                 (format #t "| **Complications:** ")
+                 (loop for complication in complications
+                       for i from 1
+                       when (> i 1) do (format #t ", ")
+                       do (format #t "~A" complication))
+                 (format #t "~%")))))
       ;; Powers and Spells come (almost) right after Perks, because that's
       ;; where Sorcerer will be.
       (when-in-alist (powers "Powers" character)
@@ -327,6 +344,7 @@
     (exit 1))
 
   (define output-breachworld #f)
+  (define output-combined #f)
   (define output-generated #f)
   (define output-notes #t)
   (define output-npc-format #f)
@@ -349,7 +367,10 @@
           ;;(args:make-option (c chunk) #:none "Chunk output into separate files."
           ;; (set! chunk #t))
           (args:make-option
-           (d debug) #:none "Output character for debugging"
+           (C combined) #:none "Combine Perks and Complications in output."
+           (set! output-combined #t))
+          (args:make-option
+           (d debug) #:none "Output character for debugging."
            (set! debug (not debug)))
           (args:make-option
            (g generated) #:none
