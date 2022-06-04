@@ -18,6 +18,16 @@
   (import (chicken port))
   (import (chicken process-context))
 
+  (define debugging #f)
+  (define dbg
+    (lambda args
+      (cond (debugging
+             (format (current-error-port) "~A: dbg: " (program-name))
+             (apply format (cons (current-error-port) args))
+             (format (current-error-port) "\n")
+             (flush-output (current-error-port)))
+            (else #f))))
+
   (define (die status . args)
     (format (current-error-port) "~A: fatal error: " (program-name))
     (apply format (cons (current-error-port) args))
@@ -78,7 +88,9 @@
       (when-in-alist (name "Name" character)
 	(format #t "Name: ~A" name))
       (when-in-alist (archetype "Archetype" character)
-	(format #t " - ~A" archetype))
+        (if (assoc "Name" character)
+            (format #t " - ~A" archetype)
+	    (format #t "~A" archetype)))
       (format #t "~%")
       (when-in-alist (description "Description" character)
         (format #t "      ~A~%" description))
@@ -90,7 +102,9 @@
       ;; TODO: Check where skills listed, with stats or under 'skills'
       ;; 
       ;; This works for absolute skills listed with stats.
+      (dbg "before statistics")
       (do-list stat-name statistics
+        (dbg "stat: ~a" stat-name)
 	(unless (assoc stat-name character)
 	  (die 1 "Missing stat name: ~A" stat-name))
 	(let ((stat-value (assoc stat-name character)))
@@ -101,6 +115,7 @@
 	   	    (format #f "~a: ~a" stat-name stat-dice) stat-cost)
 	    (loop for skill in skills
 		  do (begin
+                       (dbg "skill: ~a" skill)
 		       (match-let (((skill-name skill-dice) skill))
 			 (let* ((skill-cost (dice-to-cost skill-dice))
 				(relative-cost (- skill-cost stat-cost))
@@ -113,16 +128,20 @@
 				   (format #f "~a: ~a" skill-name skill-dice)
 				   relative-dice
 				   relative-cost)))))))))
+      (dbg "before perks")
       (when-in-alist (perks "Perks" character)
 	(format #t "Perks:~%")
 	(loop for perk in perks
-	      do (match-let (((perk-name perk-dice) perk))
-		   (let ((perk-cost (dice-to-cost perk-dice)))
-		     (inc! total-perk-cost perk-cost)
-		     (inc! total-skill-and-perk-cost perk-cost)
-		     (format #t "    ~26A (~3D points)~%"
-			     (format #f "~A: ~A" perk-name perk-dice)
-			     perk-cost)))))
+	      do (begin
+                   (dbg "perk: ~a" perk)
+                   (match-let (((perk-name perk-dice) perk))
+		     (let ((perk-cost (dice-to-cost perk-dice)))
+		       (inc! total-perk-cost perk-cost)
+		       (inc! total-skill-and-perk-cost perk-cost)
+		       (format #t "    ~26A (~3D points)~%"
+			       (format #f "~A: ~A" perk-name perk-dice)
+			       perk-cost))))))
+      (dbg "before totals")
       (let* ((total-stat-dice (cost-to-dice total-stat-cost))
              (total-stat-increase-cost (- total-stat-cost *default-stat-cost*))
              (total-stat-increase-dice (cost-to-dice total-stat-increase-cost))
@@ -193,10 +212,12 @@
 
   (define opts
     (list (args:make-option
-           (j json) #:none "Assume input file is json."
-           (set! use-json #t))
-          (args:make-option
-           (y yaml) #:none "Assume input file is yaml."
+           (d debug)
+           #:none "Turn on debugging.  Useful when your input is not correct"
+           (set! debugging #t))
+          (args:make-option (j json) #:none "Assume input file is json."
+            (set! use-json #t))
+          (args:make-option (y yaml) #:none "Assume input file is yaml."
            (set! use-yaml #t))))
 
   (receive (options operands)

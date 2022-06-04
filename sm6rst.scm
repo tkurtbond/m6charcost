@@ -28,10 +28,16 @@
     (format (current-error-port) "\n")
     (exit status))
 
-  (define (dbg . args)
-    (format (current-error-port) "~A: dbg: " (program-name))
-    (apply format (cons (current-error-port) args)))
-  
+  (define debugging #f)
+  (define dbg
+    (lambda args
+      (cond (debugging
+             (format (current-error-port) "~A: dbg: " (program-name))
+             (apply format (cons (current-error-port) args))
+             (format (current-error-port) "\n")
+             (flush-output (current-error-port)))
+            (else #f))))
+
   ;; (put 'when-in-alist 'scheme-indent-function 1)
   (define-syntax when-in-alist
     (syntax-rules ()
@@ -57,10 +63,12 @@
                               (else line)))))
 
   (define (print-npc-attributes-and-skills character statistics)
+    (dbg "before statistics")
     (format #t "| **Attibutes:** ")
     (define skills '())
     (loop for name in statistics for i from 1
           do (begin
+               (dbg "stat: ~a" name)
                (let ((stat (assoc name character)))
                  (unless stat
 	           (die 1 "Missing stat name: ~A" name))
@@ -74,13 +82,17 @@
     (set! skills (sort skills (lambda (x y) (string<? (car x) (car y)))))
     (format #t "| **Skills:** ")
     (loop for skill in skills for i from 1
-          do (match-let (((skill-name skill-dice) skill))
-               (when (> i 1) (format #t ", "))
-               (format #t "~A ~A" skill-name skill-dice)))
+          do (begin
+               (dbg "skill: ~a" skill)
+               (match-let (((skill-name skill-dice) skill))
+                 (when (> i 1) (format #t ", "))
+                 (format #t "~A ~A" skill-name skill-dice))))
     (format #t "~%"))
 
   (define (print-pc-attributes-and-skills character statistics)
+    (dbg "before statistics")
     (do-list stat-name statistics
+      (dbg "stat: ~a" stat-name)
       (unless (assoc stat-name character)
 	(die 1 "Missing stat name: ~A" stat-name))
       (let ((stat-value (assoc stat-name character)))
@@ -93,8 +105,10 @@
                 for i from 1
                 when (= i 1) do (format #t " — ")
                 when (> i 1) do (format #t ", ")
-		do (match-let (((skill-name skill-dice) skill))
-                     (format #t "~A ~A" skill-name skill-dice)))))
+		do (begin
+                     (dbg "skill: ~a" skill)
+                     (match-let (((skill-name skill-dice) skill))
+                     (format #t "~A ~A" skill-name skill-dice))))))
       (format #t "~%")))
 
   (define blanks-rx (string->irregex "[\t ]*"))
@@ -110,7 +124,9 @@
       ;; No, use a hypen-minus, because it appears in the PDF outline, and
       ;; groff doesn't get non-ascii characters right in that.
       (when-in-alist (archetype "Archetype" character)
-	(set! header (format #f "~A - ~A" header archetype)))
+        (if (= 0 (string-length header))
+            (set! header (format #f "~A" archetype))
+	    (set! header (format #f "~A - ~A" header archetype))))
       (when-in-alist (number "Number" character)
 	(set! header (format #f "~A ×~A" header number)))
       (when output-player-name
@@ -131,33 +147,43 @@
                (not output-player-format))
           (print-npc-attributes-and-skills character statistics)
           (print-pc-attributes-and-skills character statistics))
-      (cond ((output-combined
-              (let ((combined
-                     (append 
-                      (when-in-alist (perks "Perks" character)
-                        (loop for perk in perks
-                              collect (match-let (((perk-name perk-dice) perk))
-                                        perk-name)))
-                      (when-in-alist (comps "Complications" character)
-                        (loop for comp in comps
-                              collect (match-let (((comp-name comp-dice) comp))
-                                        comp-name))))))
-                (unless (null? combined)
-                  (format #t "| **Perks & Comps:** ")
-                  (loop for item in combined for i from 1
-                        when (> i 1) do (format #t ", ")
-                        do (format #t "~A" item))))))
+      (dbg "Before Perks and Complications")
+      (cond (output-combined
+             (dbg "Combined Perks & Comps")
+             (let ((combined
+                    (append
+                     (let ((perks (assoc "Perks" character)))
+                       (if perks
+                           (loop for perk in (cdr perks)
+                                 collect (begin
+                                           (dbg "perk: ~a" perk)
+                                           (match-let (((perk-name perk-dice) perk))
+                                             perk-name)))
+                           '()))
+                     (let ((comps (assoc "Complications" character)))
+                       (if comps
+                           (cdr comps)
+                           '())))))
+               (unless (null? combined)
+                 (format #t "| **Perks & Comps:** ")
+                 (loop for item in combined for i from 1
+                       when (> i 1) do (format #t ", ")
+                       do (format #t "~A" item))
+                 (format #t "~%"))))
             (else
+             (dbg "Separage Perks and Complicaitons")
              (when-in-alist (perks "Perks" character)
                (when (> (length perks) 0)
 	         (format #t "| **Perks:** ")
 	         (loop for perk in perks
                        for i from 1
                        when (> i 1) do (format #t ", ")
-	               do (match-let (((perk-name perk-dice) perk))
+	               do (begin
+                            (dbg "perk: ~a" perk)
+                            (match-let (((perk-name perk-dice) perk))
                             ;; we don't care what it cost since we're not
                             ;; calculating costs.
-                            (format #t "~A" perk-name)))
+                            (format #t "~A" perk-name))))
                  (format #t "~%")))
              (when-in-alist (complications "Complications" character)
                (when (> (length complications) 0)
@@ -204,11 +230,13 @@
                (format #t "| **Static:** ")
                (loop for static in statics for i from 1
                      when (> i 1) do (format #t "; ")
-                     do (match static
-                          ((static-name static-value) 
-                           (format #t "~A ~A" static-name static-value))
-                          ((? string? static)
-                           (format #t "~A" static))))
+                     do (begin
+                          (dbg "static: ~a" static)
+                          (match static
+                            ((static-name static-value) 
+                             (format #t "~A ~A" static-name static-value))
+                            ((? string? static)
+                             (format #t "~A" static)))))
                (format #t "~%"))
               (else (format #t "| **Static:** ~A~%" statics))))
       (when-in-alist (defenses "Defenses" character)
@@ -216,11 +244,13 @@
                (format #t "| **Defenses:** ")
                (loop for defense in defenses for i from 1
                      when (> i 1) do (format #t "; ")
-                     do (match defense
+                     do (begin
+                          (dbg "defense: ~A" defense)
+                          (match defense
                           ((defense-name defense-value)
                            (format #t "~A ~A" defense-name defense-value))
                           ((? string? defense)
-                           (format #t "~A" defense))))
+                           (format #t "~A" defense)))))
                (format #t "~%"))
               (else (format #t "| **Defenses:** ~A~%" defenses))))
       (cond (output-breachworld
@@ -356,7 +386,6 @@
   (define use-json #f)
 
   ;;(define chunk #f)
-  (define debug #f)
   (define underline #\-)
   (define substitutes #f)
 
@@ -370,8 +399,9 @@
            (C combined) #:none "Combine Perks and Complications in output."
            (set! output-combined #t))
           (args:make-option
-           (d debug) #:none "Output character for debugging."
-           (set! debug (not debug)))
+           (d debug)
+           #:none "Turn on debugging.  Useful when your input is not correct"
+           (set! debugging #t))
           (args:make-option
            (g generated) #:none
            "Output a generated date only if title specified."
