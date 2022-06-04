@@ -1,3 +1,4 @@
 * sm6rst
-** TODO Add command line option to merge Perks and Complications
+** DONE Add command line option to merge Perks and Complications
    Print as "Perks & Comps: <list>".
+** Update sm6troff-ms to match sm6rst.
