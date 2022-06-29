@@ -33,7 +33,8 @@ proc calculateCharacter(character: JsonNode) =
     totalSkillAndPerkCost = 0
   let
     name = character["Name"].getStr()
-    player = character["Player"].getStr()
+    player = if character.hasKey("Player"): character["Player"].getStr()
+             else: ""
     statistics = if character.hasKey("Statistics"):
                    character["Statistics"].getElems.map(x => x.getStr())
                  else:
@@ -42,7 +43,7 @@ proc calculateCharacter(character: JsonNode) =
   if character.hasKey ("Description"):
     let desc = character["Description"].getStr()
     echo fmt"    {desc}"
-  echo fmt"Player: {player}"
+  if player != "": echo fmt"Player: {player}"
   for statName in statistics:
     let statArray = character[statName]
     let statValue = statArray[0].getStr()
@@ -88,17 +89,18 @@ proc calculateCharacter(character: JsonNode) =
   echo &"{tTotal:23} {totalDice:>6} ({totalCost:3} points)"
 
 proc main() =
-  if paramCount() != 1:
-    quit("synopsis: " & getAppFilename() & " filename")
-  let
-    filename = paramStr (1)
-    entireFile = readFile(filename)
-  let characters = parseJson(entireFile)
   let lineOfEquals = '='.repeat(42)
-  var i = 0
-  for character in characters:
-    inc i
-    if i > 1: echo lineOfEquals
-    calculate_character character
+  if paramCount() == 0:
+    quit("synopsis: " & getAppFilename() & " filename ...")
+  else:
+    var i = 0
+    for j in 1 .. paramCount():
+      let filename = paramStr (j)
+      let entireFile = readFile(filename)
+      let characters = parseJson(entireFile)
+      for character in characters:
+        inc i
+        if i > 1: echo lineOfEquals
+        calculate_character character
 
 main()
