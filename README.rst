@@ -81,6 +81,32 @@ A typical Mini Six character expressed in YAML_ looks like this:
        • Your sling is stored coiled up in an elegantly decorated pouch
          that also holds 3 pounds of lead sling bullets.
        • Your chainmail has multicolored links that make up a pattern.
+
+The character cost information from that character looks like:
+
+.. code:: 
+
+   Name: Bersaba Kitto - elegant sorcerer
+         Tall, willowy, elegant, and abstracted.
+   Player: Lily Bond
+   Might: 3D                      (  9 points)
+       Sword: 5D            +2D+0 (  6 points)
+   Agility: 3D                    (  9 points)
+       Dodge: 5D            +2D+0 (  6 points)
+       Sling: 4D            +1D+0 (  3 points)
+   Wit: 4D                        ( 12 points)
+       Magic: 6D            +2D+0 (  6 points)
+   Charm: 2D                      (  6 points)
+   Perks:
+       Sorcerer: 3D               (  9 points)
+   total stat:              12D+0 ( 36 points)
+   total stat increase:      0D+0 (  0 points)
+   total skill:              7D+0 ( 21 points)
+   total skill increase:     0D+0 (  0 points)
+   total perk:               3D+0 (  9 points)
+   total (skill + perk):    10D+0 ( 30 points)
+   total:                   22D+0 ( 66 points)
+
    
 The reStructuredText output from that looks like:
 
