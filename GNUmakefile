@@ -1,4 +1,5 @@
 CP=cp
+CSC=csc
 
 PROGRAMS=sm6 sm6fmt sm6rst sm6troff-ms yaml2scm json2scm
 OTHER_PROGRAMS=nm6 gm6 # Ignore om6 since I'm not working it right now.
@@ -13,7 +14,7 @@ build/% : %.go
 
 
 build/% : %.scm
-	csc $(CSCFLAGS) -o $@ $<
+	$(CSC) $(CSCFLAGS) -o $@ $<
 
 
 %.native : %.ml
