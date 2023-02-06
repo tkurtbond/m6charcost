@@ -56,6 +56,7 @@
   (define *print-increase* #t) ;set from command line???
 
   (define (dice-to-cost dice)
+    (dbg "dice-to-cost: dice: ~a" dice)
     (let ((m (irregex-match *scanner* dice)))
       (unless m				; can't decide which is better.
 	(if #f (die 1 "invalid dice: ~s" dice)

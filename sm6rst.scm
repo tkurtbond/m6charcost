@@ -135,6 +135,8 @@
       (format #t "~A~%" header)
       (format #t "~A~%~%" (make-string (string-length header) underline))
       (when-in-alist (quote "Quote" character)
+        (dbg "print-character: ~S: quote: ~S~%"
+             (if outer-name outer-name "(unnamed") quote)
         (format #t "*“~A”*~%~%" quote))
       (when-in-alist (description "Description" character)
         (format #t "~A~%~%" description))
