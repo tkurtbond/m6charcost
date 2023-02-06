@@ -1,4 +1,4 @@
-gm6a :
+gm6a : gm6a.go character.go
 	go build gm6a.go character.go 
 
 run :

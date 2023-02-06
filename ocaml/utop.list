@@ -1,0 +1,225 @@
+        OCaml version 4.12.0
+
+# #require "yaml";;
+Unknown directive `require'.
+# 
+
+Process inferior-caml finished
+        OCaml version 4.12.0
+
+# #require "yaml";;
+# #require "yaml.unix";;
+# let y = Yaml_unix.of_file_exn Fpath.(v "test-files/kids-pcs-3.yaml");;
+Exception: Failure "test-files/kids-pcs-3.yaml: No such file or directory".
+# let y = Yaml_unix.of_file_exn Fpath.(v "../test-files/kids-pcs-3.yaml");;
+val y : Yaml.value =
+  `A
+    [`O
+       [("Name", `String "J'Lee"); ("Archetype", `String "Bounty Hunter");
+        ("Description", `String "One side of head is shaved.");
+        ("Player", `String "Eva Beth Atha");
+        ("Might",
+         `A
+           [`String "3D"; `A [`String "Brawling"; `String "4D"];
+            `A [`String "Melee"; `String "4D"]]);
+        ("Agility",
+         `A
+           [`String "4D"; `A [`String "Dodge"; `String "5D"];
+            `A [`String "Piloting"; `String "5D"];
+            `A [`String "Rifle"; `String "6D+1"]]);
+        ("Wit",
+         `A
+           [`String "3D"; `A [`String "Computer"; `String "4D"];
+            `A [`String "Gunnery"; `String "3D+1"];
+            `A [`String "Navigation"; `String "5D"];
+            `A [`String "Search"; `String "4D"];
+            `A [`String "Tracking"; `String "4D+1"]]);
+        ("Charm",
+         `A [`String "2D"; `A [`String "Diplomacy"; `String "2D+1"]]);
+        ("Perks", `A [`A [`String "Favors"; `String "1D"]]);
+        ("Complications", `A [`String "TBA (=ship)"]);
+        ("Gear",
+         `A
+           [`String "rifle (6D)"; `String "vibroknife";
+            `String "body armor (+6)"; `String "clothes"; `String "glowrod";
+            `String "macro binoculars"]);
+        ("Hero_Points", `Float 1.);
+        ("Static",
+         `String "Dodge 15, Block 12, Parry 19 (rifle), Soak 9+6=15")];
+     `O
+       [("Name", `String "Havan Zul"); ("Archetype", `String "Smuggler");
+        ("Player", `String "Tristan Atha");
+        ("Might", `A [`String "3D"; `A [`String "Brawling"; `String "4D"]]);
+        ("Agility",
+         `A
+           [`String "3D+2"; `A [`String "Dodge"; `String "5D+1"];
+            `A [`String "Piloting"; `String "5D+2"];
+            `A [`String "Pistol"; `String "5D+2"];
+            `A [`String "Stealth"; `String "4D+2"]]);
+        ("Wit", `A [`String "3"... (* string length 4; truncated *); ...]);
+        ...];
+     ...]
+# let y = Yaml_unix.of_file_exn Fpath.(v "../test-files/kids-pcs-3.yaml");;  C-c C-cInterrupted.
+# 
+let chars = match y with `A cs -> cs;;
+Line 1, characters 12-36:
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(`Bool _|`Null|`O _|`Float _|`String _)
+val chars : Yaml.value list =
+  [`O
+     [("Name", `String "J'Lee"); ("Archetype", `String "Bounty Hunter");
+      ("Description", `String "One side of head is shaved.");
+      ("Player", `String "Eva Beth Atha");
+      ("Might",
+       `A
+         [`String "3D"; `A [`String "Brawling"; `String "4D"];
+          `A [`String "Melee"; `String "4D"]]);
+      ("Agility",
+       `A
+         [`String "4D"; `A [`String "Dodge"; `String "5D"];
+          `A [`String "Piloting"; `String "5D"];
+          `A [`String "Rifle"; `String "6D+1"]]);
+      ("Wit",
+       `A
+         [`String "3D"; `A [`String "Computer"; `String "4D"];
+          `A [`String "Gunnery"; `String "3D+1"];
+          `A [`String "Navigation"; `String "5D"];
+          `A [`String "Search"; `String "4D"];
+          `A [`String "Tracking"; `String "4D+1"]]);
+      ("Charm", `A [`String "2D"; `A [`String "Diplomacy"; `String "2D+1"]]);
+      ("Perks", `A [`A [`String "Favors"; `String "1D"]]);
+      ("Complications", `A [`String "TBA (=ship)"]);
+      ("Gear",
+       `A
+         [`String "rifle (6D)"; `String "vibroknife";
+          `String "body armor (+6)"; `String "clothes"; `String "glowrod";
+          `String "macro binoculars"]);
+      ("Hero_Points", `Float 1.);
+      ("Static", `String "Dodge 15, Block 12, Parry 19 (rifle), Soak 9+6=15")];
+   `O
+     [("Name", `String "Havan Zul"); ("Archetype", `String "Smuggler");
+      ("Player", `String "Tristan Atha");
+      ("Might", `A [`String "3D"; `A [`String "Brawling"; `String "4D"]]);
+      ("Agility",
+       `A
+         [`String "3D+2"; `A [`String "Dodge"; `String "5D+1"];
+          `A [`String "Piloting"; `String "5D+2"];
+          `A [`String "Pistol"; `String "5D+2"];
+          `A [`String "Stealth"; `String "4D+2"]]);
+      ("Wit",
+       `A [`String "3D+"... (* string length 4; truncated *); `A [...]; ...]);
+      ...];
+   ...]
+# let char1 = List.hd chars;;
+val char1 : Yaml.value =
+  `O
+    [("Name", `String "J'Lee"); ("Archetype", `String "Bounty Hunter");
+     ("Description", `String "One side of head is shaved.");
+     ("Player", `String "Eva Beth Atha");
+     ("Might",
+      `A
+        [`String "3D"; `A [`String "Brawling"; `String "4D"];
+         `A [`String "Melee"; `String "4D"]]);
+     ("Agility",
+      `A
+        [`String "4D"; `A [`String "Dodge"; `String "5D"];
+         `A [`String "Piloting"; `String "5D"];
+         `A [`String "Rifle"; `String "6D+1"]]);
+     ("Wit",
+      `A
+        [`String "3D"; `A [`String "Computer"; `String "4D"];
+         `A [`String "Gunnery"; `String "3D+1"];
+         `A [`String "Navigation"; `String "5D"];
+         `A [`String "Search"; `String "4D"];
+         `A [`String "Tracking"; `String "4D+1"]]);
+     ("Charm", `A [`String "2D"; `A [`String "Diplomacy"; `String "2D+1"]]);
+     ("Perks", `A [`A [`String "Favors"; `String "1D"]]);
+     ("Complications", `A [`String "TBA (=ship)"]);
+     ("Gear",
+      `A
+        [`String "rifle (6D)"; `String "vibroknife";
+         `String "body armor (+6)"; `String "clothes"; `String "glowrod";
+         `String "macro binoculars"]);
+     ("Hero_Points", `Float 1.);
+     ("Static", `String "Dodge 15, Block 12, Parry 19 (rifle), Soak 9+6=15")]
+# let name = List.assoc "Name" char1;;
+Line 1, characters 29-34:
+Error: This expression has type Yaml.value
+       but an expression was expected of type (string * 'a) list
+# char1
+  ;;
+- : Yaml.value =
+`O
+  [("Name", `String "J'Lee"); ("Archetype", `String "Bounty Hunter");
+   ("Description", `String "One side of head is shaved.");
+   ("Player", `String "Eva Beth Atha");
+   ("Might",
+    `A
+      [`String "3D"; `A [`String "Brawling"; `String "4D"];
+       `A [`String "Melee"; `String "4D"]]);
+   ("Agility",
+    `A
+      [`String "4D"; `A [`String "Dodge"; `String "5D"];
+       `A [`String "Piloting"; `String "5D"];
+       `A [`String "Rifle"; `String "6D+1"]]);
+   ("Wit",
+    `A
+      [`String "3D"; `A [`String "Computer"; `String "4D"];
+       `A [`String "Gunnery"; `String "3D+1"];
+       `A [`String "Navigation"; `String "5D"];
+       `A [`String "Search"; `String "4D"];
+       `A [`String "Tracking"; `String "4D+1"]]);
+   ("Charm", `A [`String "2D"; `A [`String "Diplomacy"; `String "2D+1"]]);
+   ("Perks", `A [`A [`String "Favors"; `String "1D"]]);
+   ("Complications", `A [`String "TBA (=ship)"]);
+   ("Gear",
+    `A
+      [`String "rifle (6D)"; `String "vibroknife"; `String "body armor (+6)";
+       `String "clothes"; `String "glowrod"; `String "macro binoculars"]);
+   ("Hero_Points", `Float 1.);
+   ("Static", `String "Dodge 15, Block 12, Parry 19 (rifle), Soak 9+6=15")]
+# let alist = match char1 with `O alist -> alist;;
+Line 1, characters 12-46:
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(`Bool _|`Null|`Float _|`String _|`A _)
+val alist : (string * Yaml.value) list =
+  [("Name", `String "J'Lee"); ("Archetype", `String "Bounty Hunter");
+   ("Description", `String "One side of head is shaved.");
+   ("Player", `String "Eva Beth Atha");
+   ("Might",
+    `A
+      [`String "3D"; `A [`String "Brawling"; `String "4D"];
+       `A [`String "Melee"; `String "4D"]]);
+   ("Agility",
+    `A
+      [`String "4D"; `A [`String "Dodge"; `String "5D"];
+       `A [`String "Piloting"; `String "5D"];
+       `A [`String "Rifle"; `String "6D+1"]]);
+   ("Wit",
+    `A
+      [`String "3D"; `A [`String "Computer"; `String "4D"];
+       `A [`String "Gunnery"; `String "3D+1"];
+       `A [`String "Navigation"; `String "5D"];
+       `A [`String "Search"; `String "4D"];
+       `A [`String "Tracking"; `String "4D+1"]]);
+   ("Charm", `A [`String "2D"; `A [`String "Diplomacy"; `String "2D+1"]]);
+   ("Perks", `A [`A [`String "Favors"; `String "1D"]]);
+   ("Complications", `A [`String "TBA (=ship)"]);
+   ("Gear",
+    `A
+      [`String "rifle (6D)"; `String "vibroknife"; `String "body armor (+6)";
+       `String "clothes"; `String "glowrod"; `String "macro binoculars"]);
+   ("Hero_Points", `Float 1.);
+   ("Static", `String "Dodge 15, Block 12, Parry 19 (rifle), Soak 9+6=15")]
+# let name = List.assoc "Name" char1;;
+Line 1, characters 29-34:
+Error: This expression has type Yaml.value
+       but an expression was expected of type (string * 'a) list
+# let name = List.assoc "Name" alist;;
+val name : Yaml.value = `String "J'Lee"
+# 11;;
+
+- : int = 11
+#   

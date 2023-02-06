@@ -93,7 +93,9 @@ func calculateCharacter(character CharacterType) {
 	if character.Description != "" {
 		fmt.Printf("    %s\n", character.Description)
 	}
-	fmt.Printf("Player: %s\n", character.Player)
+	if character.Player != "" {
+		fmt.Printf("Player: %s\n", character.Player)
+	}
 
 	calculateStatistic(&cost, "Might", character.Might)
 	calculateStatistic(&cost, "Agility", character.Agility)
