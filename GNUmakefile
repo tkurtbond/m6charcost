@@ -1,3 +1,4 @@
+SHELL=/bin/bash
 CP=cp
 
 ifndef CSC
