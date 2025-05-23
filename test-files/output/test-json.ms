@@ -13,7 +13,7 @@
 .\" line height
 .nr VS 12p
 .\" font family: A, BM, H, HN, N, P, T, ZCM
-.fam EBGaramond
+.fam P
 .\" paragraph indent
 .nr PI 0m
 .\" Quote indent
@@ -64,37 +64,40 @@
 .DEVTAG-TL
 ..
 .sp 1v
-.KS
 .LP
-\fB\s[+6]Morwen Polglaze — ruin/cave explorer (Lily Bond)\s0\fP
+\fB\s[+6]Morwen Polglaze - ruin/cave explorer (Lily Bond)\s0\fP
 .LP
 Very short, **very** muscular.  Murderous. :-)
 .LP
+.KS
 \fBMight 4D\fP — Axe 6D
 .br
-\fBAgility 3D\fP — Dodge 5D, Crossbow 4D
+\fBAgility 3D\fP — Crossbow 4D, Dodge 5D
 .br
 \fBWit 3D\fP — Search 4D, Survival 4D
 .br
 \fBCharm 2D\fP
 .br
-\fBStatic:\fP Dodge 15, Block 12, Parry 18 (Axe), Soak 12(18)
-.br
-\fBPerks:\fP Perceptive 2D, Recall 1D
-.br
-\fBGear:\fP Axe (+3D), Chainmail (+6), Crossbow (4D+1, 50/150/400, 20 bolts), Knife (+1D)
+\fBPerks:\fP Perceptive, Recall
 .br
 \fBHero Points:\fP 2
 .br
-\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–16 □
+\fBGear:\fP Axe (+3D), Chainmail (+6), Crossbow (4D+1, 50/150/400, 20 bolts), Knife (+1D)
+.br
+\fBStatic:\fP Dodge 15, Block 12, Parry 18 (Axe), Soak 12(18)
+.br
+\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □
 .KE
+
 .sp 1v
-.KS
 .LP
-\fB\s[+6]Bersaba Kitto — elegant sorcerer (Lily Bond)\s0\fP
+\fB\s[+6]Bersaba Kitto - elegant sorcerer (Lily Bond)\s0\fP
+.LP
+\fI“What should I change into?”\fP
 .LP
 Tall, willowy, elegant, and abstracted.
 .LP
+.KS
 \fBMight 3D\fP — Sword 5D
 .br
 \fBAgility 3D\fP — Dodge 5D, Sling 4D
@@ -103,15 +106,15 @@ Tall, willowy, elegant, and abstracted.
 .br
 \fBCharm 2D\fP
 .br
-\fBStatic:\fP Dodge 15, Block 9, Parry 15 (Sword), Soak 9(15))
-.br
-\fBPerks:\fP Sorcerer 3D
+\fBPerks:\fP Sorcerer
 .br
 \fBSpells:\fP Fly, Hasten, See Magic Aura, Shape Change
 .br
-\fBGear:\fP Sword (+2D+2), Chainmail (+6), Elegant clothes, Knife (+1D), Sling (+2D+1, 40/130/400), 48 lead sling bullets
-.br
 \fBHero Points:\fP 2
 .br
-\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–16 □
+\fBGear:\fP Sword (+2D+2), Chainmail (+6), Elegant clothes, Knife (+1D), Sling (+2D+1, 40/130/400), 48 lead sling bullets
+.br
+\fBStatic:\fP Dodge 15, Block 9, Parry 15 (Sword), Soak 9(15))
+.br
+\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □
 .KE

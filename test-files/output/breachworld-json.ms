@@ -13,7 +13,7 @@
 .\" line height
 .nr VS 12p
 .\" font family: A, BM, H, HN, N, P, T, ZCM
-.fam EBGaramond
+.fam P
 .\" paragraph indent
 .nr PI 0m
 .\" Quote indent
@@ -64,10 +64,12 @@
 .DEVTAG-TL
 ..
 .sp 1v
-.KS
 .LP
 \fB\s[+6]Allosaur (Juvenile)\s0\fP
 .LP
+.KS
+\fBScale:\fP +2D: PCs get +2D to hit and +6 to Dodge. It gets +2D to Damage and +6 to soak.
+.br
 \fBMight 3D+1\fP — Brawl 5D, Stamina 4D
 .br
 \fBAgility 3D+1\fP — Athletics (Run) 5D+1, Dodge 5D+2, Stealth 4D+2
@@ -78,21 +80,24 @@
 .br
 \fBStatic:\fP Dodge 15, Soak 13 (19 vs. Scale +0D)
 .br
+\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □
 \fBMove:\fP 16
 .br
 \fBNatural Armor:\fP +3 Armor (included in Soak)
 .br
 \fBNatural Weapons:\fP +2D Teeth: 5D+1 damage (7D+1 vs Scale +0D
 .br
-\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–16 □
 .KE
+
 .sp 1v
-.KS
 .LP
 \fB\s[+6]Dragonfly\s0\fP
 .LP
 The creature is huge, as big as an elephant.  It is semi-humanoid, having the head and wings of a immense dragonfly, two pairs of arms, a pair of legs, and a segmented body part coming out of the base of its spine that ends in a long stinger.  It has three sets of mandibles for chewing.  It is covered by chitinous armor.  Its eyes glow blue, and its body is dark red on the head and torso, fading to a lighter red along its extremities.
 .LP
+.KS
+\fBScale:\fP +2D: PCs get +2D to hit and +6 to Dodge. It gets +2D to Damage and +6 to soak.
+.br
 \fBMight 3D\fP — Brawl 5D, Stamina 4D
 .br
 \fBAgility 3D+1\fP — Athletics 5D+1, Dodge 5D
@@ -103,6 +108,7 @@ The creature is huge, as big as an elephant.  It is semi-humanoid, having the he
 .br
 \fBStatic:\fP Dodge 15, Soak 15 (21 vs. Scale +0D)
 .br
+\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □
 \fBMove:\fP 15; Flying 25
 .br
 \fBNatural Armor:\fP +6 Chitin Armor (included in Soak)
@@ -111,13 +117,13 @@ The creature is huge, as big as an elephant.  It is semi-humanoid, having the he
 .br
 \fBSpecial Defenses:\fP Resistant to Lightning: ½ damage
 .br
-\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–16 □
 .KE
+
 .sp 1v
-.KS
 .LP
 \fB\s[+6]Imp, Yellow\s0\fP
 .LP
+.KS
 \fBMight 2D\fP — Brawl 3D
 .br
 \fBAgility 5D\fP — Athletics 6D, Dodge 7D, Stealth 5D
@@ -128,17 +134,18 @@ The creature is huge, as big as an elephant.  It is semi-humanoid, having the he
 .br
 \fBStatic:\fP Block 9, Dodge 21, Soak 6
 .br
+\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □
 \fBMove:\fP 11
 .br
 \fBSpecial Abilities:\fP May perform the Aether Feat of Spontaneous; Combustion once per hour as a natural ability.; Is immune to damage by fire and heat.
 .br
-\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–16 □
 .KE
+
 .sp 1v
+.LP
+\fB\s[+6]Agi - Ruthless Machine Man Melee Merc\s0\fP
+.LP
 .KS
-.LP
-\fB\s[+6]Agi — Ruthless Machine Man Melee Merc\s0\fP
-.LP
 \fBMight 3D+2\fP — Axe 5D+2, Knife 5D+2
 .br
 \fBAgility 3D\fP — Handgun 5D
@@ -147,19 +154,19 @@ The creature is huge, as big as an elephant.  It is semi-humanoid, having the he
 .br
 \fBCharm 1D+2\fP
 .br
-\fBDefenses:\fP Block 9, Dodge 9, Parry 17 (axe or knife), Soak 11
-.br
-\fBMove:\fP 15
-.br
-\fBPerks:\fP Quick Study 1D, Recall 1D
+\fBPerks:\fP Quick Study, Recall
 .br
 \fBComplications:\fP Soulless
+.br
+\fBGear:\fP Battle Axe (+3D), Knife (+1D), Pistol (4D, 8 shots, 30/65/100 feet)
+.br
+\fBDefenses:\fP Block 9, Dodge 9, Parry 17 (axe or knife), Soak 11
+.br
+\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–15 □
+\fBMove:\fP 15
 .br
 \fBMelee:\fP **Battle Axe:** Axe 5D+2, damage 6D+2; **Fists:** Might 3D, damage 3D; **Knife:** Knife 5D+2, damage 4D+2
 .br
 \fBRanged:\fP **Pistol:** Handgun 4D, damage 4D, 8 shots, 30/65/100 feet
 .br
-\fBGear:\fP Battle Axe (+3D), Knife (+1D), Pistol (4D, 8 shots, 30/65/100 feet)
-.br
-\fBWL:\fP S:1–3 □ W:4–8 □ SW:4–8 □ I:9–12 □ MW:13–16 □
 .KE
