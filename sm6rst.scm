@@ -52,7 +52,7 @@
       (if (null? substitutes)
           #f
           (let* ((substitute (car substitutes))
-                 (rx `(bol (+ ,(car substitute)) eol))
+                 (rx `(seq bos (+ ,(car substitute)) eos))
                  (ch (cdr substitute)))
             (if (irregex-match rx line)
                 (make-string (string-length line) ch)
@@ -443,8 +443,8 @@
             "                          to substitute multiple types of lines.")
            ;; sm6rst -u @ -s -. -s '~#' test-files/test.json 
            (assert (= (string-length arg) 2))
-           (let ((new (cons (irregex (string-append
-                                      "^" (substring arg 0 1) "+" "$"))
+           (let ((new (cons (string-append
+                                      "^" (substring arg 0 1) "+" "$")
                             (string-ref arg 1))))
              (set! substitutes (if substitutes (cons new substitutes)
                                    (list new)))))
