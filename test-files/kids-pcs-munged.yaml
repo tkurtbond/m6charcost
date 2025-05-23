@@ -7,7 +7,7 @@
   Agility: [4D, [Dodge, 5D], [Piloting, 5D], [Rifle, 6D]]
   Wit: [3D, [Computer, 4D], [Search, 4D], [Tracking, 4D]]
   Charm: [2D]
-  Perks: [[Favors, 1]]
+  Perks: [[Favors, 1D]]
   Complications: ["TBA (=ship)"]
   Gear: [rifle, vibroknife, "body armor (+6)", clothes, glowrod,
          "macro binoculars"]
@@ -30,7 +30,7 @@
   Agility: [3D+2, [Dodge, 4D], [Pistol, 4D+1], [Stealth, 5D+1]]
   Wit: [2D, [Computer, 4D], [Demolitions, 2D+1], [Security, 4D]]
   Charm: [2D, [Streetwise, 3D]]
-  Perks: [[Cyborg, 2]]
+  Perks: [[Cyborg, 2D]]
   Gear: [pistol, "lock pick", "flight suit (+2)", clothes, glowrod,
          "macro binoculars", "2 grenades (1 smoke)"]
   Hero_Points: 1
@@ -41,7 +41,7 @@
   Agility: [3D, [Pistol, 5D]]
   Wit: [3D, [History, 4D], [Magic, 5D]]
   Charm: [2D]
-  Perks: [[Jedi, 3]]
+  Perks: [[Jedi, 3D]]
   Spells: [bless, illusions, paralysis, sense danger]
   Gear: ["plasma sword (+4D)", "flight suit (+2)", clothes, glowrod,
          "macro binoculars"]

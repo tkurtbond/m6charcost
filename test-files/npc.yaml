@@ -7,7 +7,7 @@
   Agility: [3D, [Bow, 4D], [Dodge, 5D]]
   Wit: [4D, [Magic, 6D], [Medicine, 6D]]
   Charm: [2D]
-  Perks: [[Sorcerer, 3]]
+  Perks: [[Sorcerer, 3D]]
   Spells: [ESP, Heal, Light, Slumber]
   Gear: ["Bow (+2D+2, 30/100/300)", "Leather (+2)", "Shield (+4)",
          "Sword (+2D+2)"]
