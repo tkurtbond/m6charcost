@@ -8,8 +8,9 @@ endif
 PROGRAMS=sm6 sm6fmt sm6rst sm6troff-ms
 OTHER_PROGRAMS=nm6 gm6 # Ignore om6 since I'm not working it right now.
 
-all: $(foreach P,$(PROGRAMS:%=%$(EXE)) $(OTHER_PROGRAMS:%=%$(EXE)),build/$(P)) 
+all: $(foreach P,$(PROGRAMS:%=%$(EXE)),build/$(P))
 
+extras: $(foreach P,$(OTHER_PROGRAMS:%=%$(EXE)),build/$(P))
 
 #CSCFLAGS=-static
 
