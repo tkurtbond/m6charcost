@@ -211,18 +211,31 @@
   (define use-yaml #f)
   (define use-json #f)
 
-  (define opts
+  (define (usage)
+    (with-output-to-port (current-error-port)
+      (lambda ()
+        (print "Usage: " (program-name) " [options...] [files...]")
+        (newline)
+        (print (args:usage +command-line-options+))
+        (newline)
+        (format #t "Current argv: ~s~%" (argv))))
+    (exit 1))
+
+  (define +command-line-options+
     (list (args:make-option
            (d debug)
            #:none "Turn on debugging.  Useful when your input is not correct"
            (set! debugging #t))
+          (args:make-option
+           (h help) #:none "Display this text."
+           (usage))
           (args:make-option (j json) #:none "Assume input file is json."
             (set! use-json #t))
           (args:make-option (y yaml) #:none "Assume input file is yaml."
            (set! use-yaml #t))))
 
   (receive (options operands)
-      (args:parse (command-line-arguments) opts)
+      (args:parse (command-line-arguments) +command-line-options+)
     (cond ((= (length operands) 0)
            (process-filename "-"))
           (else 
