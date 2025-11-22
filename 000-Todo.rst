@@ -29,3 +29,4 @@ Todo for my Mini Six character costing and formatting programs
 • Write a GUI character generator?  Probably javascript on the web?
 • ✓When no filenames are specified read stdin.
 • ✓Read stdin if filename - specified.
+• Build all output from test data.
