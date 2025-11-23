@@ -119,7 +119,9 @@
           (outer-name #f))
       (when-in-alist (name "Name" character)
 	(set! header (format #f "~A" name))
-        (set! outer-name name))
+        (set! outer-name name)
+        (dbg "print-character: name: ~S"
+             (if outer-name outer-name "(unnamed")))
       ;; Using an Unicode EM DASH makes the underline longer.  utf8 egg???
       ;; No, use a hypen-minus, because it appears in the PDF outline, and
       ;; groff doesn't get non-ascii characters right in that.
