@@ -55,7 +55,7 @@
   Might: [2D, [Sword, 4D]]
   Agility: [2D, [Dodge, 3D]]
   Wit: [4D, [Language, 5D]]
-  Charm: [4D, [Diplomancy, 6D], [Persuasion, 6D], [Streetwise, 6D]]
+  Charm: [4D, [Diplomacy, 6D], [Persuasion, 6D], [Streetwise, 6D]]
   Gear: ["Leather (+2)", "Sword +2D+2", "Shield (+4)"]
   Static: [[Dodge, 9], [Block, 6], [Parry, 12], [Soak, 6(12)]]
 - Name: 'Anaoc Rosewarne'
