@@ -60,7 +60,7 @@
   Wit: [4D, [Language, 5D]]
   Charm: [4D, [Diplomacy, 6D], [Persuasion, 6D], [Streetwise, 6D]]
   Gear: ["Leather (+2)", "Sword +2D+2", "Shield (+4)"]
-  Static: [[Dodge, 9], [Block, 6], [Parry, 12], [Soak 6(12)]]
+  Static: [[Dodge, 9], [Block, 6], [Parry, 12], [Soak, 6(12)]]
 - Name: 'Anaoc Rosewarne'
   Description: 'Human Medic'
   Might: [3D, [Sword, 3D]]
@@ -71,7 +71,6 @@
   Spells: [ESP, Heal, Light, Slumber]
   Gear: ["Bow +2D+2 (30/100/300)", "Leather (+2)", "Sword +2D+2"]
   Static: [[Dodge, 15], [Block, 9], [Parry, 9], [Soak, 9(11)]]
-...
 ### Local Variables:
 ### compile-command: "yamllint -f parsable pcs-demihuman.yaml"
 ### End:
