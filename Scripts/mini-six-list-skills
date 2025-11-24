@@ -1,0 +1,4 @@
+#! /usr/bin/env bash
+
+# Example: ./Scripts/mini-six-list-skills test-data/*.{yaml,json}
+yq -ojson "$@"  | jq '.[] | (.Name, "Might", .Might, "Agility", .Agility, "Wit", .Wit, "Charm", .Charm)' | yq -pjson -oyaml
