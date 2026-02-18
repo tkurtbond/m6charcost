@@ -136,8 +136,7 @@
                                       (match-let (((spec-name spec-dice) specialization))
                                         (let* ((spec-cost (dice-to-cost spec-dice))
                                                (relative-cost (/ (- spec-cost skill-cost))
-                                               (relative 
-                                        )
+                                               (real-relative-cost ( )
                                       ))
 
                            ))))))))
